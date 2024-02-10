@@ -14,6 +14,8 @@ public class Explorer implements IExplorerRaid {
 
     private final Logger logger = LogManager.getLogger();
 
+    public int counter = 0;
+
     @Override
     public void initialize(String s) {
         logger.info("** Initializing the Exploration Command Center");
@@ -24,14 +26,47 @@ public class Explorer implements IExplorerRaid {
         logger.info("The drone is facing {}", direction);
         logger.info("Battery level is {}", batteryLevel);
     }
+    private int flyCount = 0;
+    private final int maxFlyActions = 25; // Maximum number of times to fly forward
+    private enum State { FLYING, SCANNING, ECHOING, STOPPING, TURNING }
+    private State currentState = State.FLYING;
 
     @Override
     public String takeDecision() {
         JSONObject decision = new JSONObject();
-        decision.put("action", "fly"); // we stop the exploration immediately
-        logger.info("** Decision: {}",decision.toString());
+
+        switch (currentState) {
+            case FLYING:
+                if (flyCount < maxFlyActions) {
+                    decision.put("action", "fly");
+                    flyCount++;
+                    // Optional: Transition to SCANNING or ECHOING after a certain number of flies
+                    if (flyCount == maxFlyActions) {
+                        currentState = State.TURNING; // Transition to the next state as needed
+                    }
+                }
+                break;
+            case TURNING:
+                decision.put("heading", "S");
+                currentState = State.SCANNING;
+            case SCANNING:
+                decision.put("action", "scan");
+                currentState = State.ECHOING; // Transition to the next state
+                break;
+            case ECHOING:
+                decision.put("action", "echo");
+                decision.put("parameters", new JSONObject().put("direction", "S"));
+                currentState = State.STOPPING; // Transition to the next state
+                break;
+            case STOPPING:
+                decision.put("action", "stop");
+                break;
+        }
+
+        logger.info("** Decision: {}", decision.toString());
         return decision.toString();
     }
+
 
     @Override
     public void acknowledgeResults(String s) {
