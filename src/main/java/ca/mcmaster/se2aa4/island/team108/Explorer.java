@@ -10,6 +10,10 @@ import org.json.JSONTokener;
 
 public class Explorer implements IExplorerRaid {
 
+    private DroneController droneController;
+    private MissionLogger missionLogger;
+    private Map map;
+
     private final Logger logger = LogManager.getLogger();
 
     @Override
@@ -26,7 +30,7 @@ public class Explorer implements IExplorerRaid {
     @Override
     public String takeDecision() {
         JSONObject decision = new JSONObject();
-        decision.put("action", "stop"); // we stop the exploration immediately
+        decision.put("action", "fly"); // we stop the exploration immediately
         logger.info("** Decision: {}",decision.toString());
         return decision.toString();
     }
