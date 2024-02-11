@@ -10,9 +10,7 @@ import org.json.JSONTokener;
 
 public class Explorer implements IExplorerRaid {
 
-    private DroneController droneController;
-    private MissionLogger missionLogger;
-    private Map map;
+
 
     private final Logger logger = LogManager.getLogger();
 

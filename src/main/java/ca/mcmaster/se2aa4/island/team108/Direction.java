@@ -1,16 +1,39 @@
 package ca.mcmaster.se2aa4.island.team108;
 
+// Direction/Compass Enum
 public enum Direction {
     NORTH, SOUTH, EAST, WEST;
 
-    public Direction turnRight(){
+    // implementing turnRight and turnLeft
+    public Direction turnRight() {
 
-        return SOUTH; //temporary
+        switch (this) {
+            case NORTH:
+                return EAST;
+            case EAST:
+                return SOUTH;
+            case SOUTH:
+                return WEST;
+            case WEST:
+                return NORTH;
+            default:
+                return this; 
+        }
     }
 
-    public Direction turnLeft(){
+    public Direction turnLeft() {
 
-        return NORTH; //temporary
+        switch (this) {
+            case NORTH:
+                return WEST;
+            case WEST:
+                return SOUTH;
+            case SOUTH:
+                return EAST;
+            case EAST:
+                return NORTH;
+            default:
+                return this; 
+        }
     }
-
 }
