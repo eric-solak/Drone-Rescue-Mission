@@ -27,45 +27,57 @@ public class Explorer implements IExplorerRaid {
         logger.info("Battery level is {}", batteryLevel);
     }
     private int flyCount = 0;
-    private final int maxFlyActions = 25; // Maximum number of times to fly forward
-    private enum State { FLYING, SCANNING, ECHOING, STOPPING, TURNING }
-    private State currentState = State.FLYING;
-
+    private final int FlyIterations = 25;
+    private enum State {Fly, Scan, Echo, Stop, Turn, Fly2, Uturn}
+    private State currentState = State.Fly;
     @Override
-    public String takeDecision() {
+    public String takeDecision(){
         JSONObject decision = new JSONObject();
-
-        switch (currentState) {
-            case FLYING:
-                if (flyCount < maxFlyActions) {
+        switch (currentState){
+            case Fly:
+                if (flyCount < FlyIterations){
                     decision.put("action", "fly");
                     flyCount++;
-                    if (flyCount == maxFlyActions) {
-                        currentState = State.TURNING;
+                    if (flyCount==FlyIterations) {
+                        currentState = State.Turn;
                     }
                 }
                 break;
-            case TURNING:
-                decision.put("heading", "S");
-                currentState = State.SCANNING;
-            case SCANNING:
-                decision.put("action", "scan");
-                currentState = State.ECHOING;
-                break;
-            case ECHOING:
-                decision.put("action", "echo");
+            case Turn:
+                decision.put("action", "heading");
                 decision.put("parameters", new JSONObject().put("direction", "S"));
-                currentState = State.STOPPING;
+                currentState = State.Uturn;
                 break;
-            case STOPPING:
+            case Scan:
+                decision.put("action", "scan");
+                currentState = State.Echo;
+                break;
+            case Echo:
+                decision.put("action","echo");
+                decision.put("parameters", new JSONObject().put("direction", "E"));
+                currentState = State.Fly2;
+                break;
+            case Uturn:
+                decision.put("action","echo");
+                decision.put("parameters", new JSONObject().put("direction", "W"));
+                currentState = State.Scan;
+                break;
+            case Fly2:
+                if (flyCount > 0){
+                    decision.put("action","fly");
+                    flyCount--;
+                    if (flyCount == 0){
+                        currentState = State.Stop;
+                    }
+                }
+                break;
+            case Stop:
                 decision.put("action", "stop");
                 break;
         }
         logger.info("** Decision: {}", decision.toString());
         return decision.toString();
     }
-
-
     @Override
     public void acknowledgeResults(String s) {
         JSONObject response = new JSONObject(new JSONTokener(new StringReader(s)));
