@@ -40,9 +40,8 @@ public class Explorer implements IExplorerRaid {
                 if (flyCount < maxFlyActions) {
                     decision.put("action", "fly");
                     flyCount++;
-                    // Optional: Transition to SCANNING or ECHOING after a certain number of flies
                     if (flyCount == maxFlyActions) {
-                        currentState = State.TURNING; // Transition to the next state as needed
+                        currentState = State.TURNING;
                     }
                 }
                 break;
@@ -51,18 +50,17 @@ public class Explorer implements IExplorerRaid {
                 currentState = State.SCANNING;
             case SCANNING:
                 decision.put("action", "scan");
-                currentState = State.ECHOING; // Transition to the next state
+                currentState = State.ECHOING;
                 break;
             case ECHOING:
                 decision.put("action", "echo");
                 decision.put("parameters", new JSONObject().put("direction", "S"));
-                currentState = State.STOPPING; // Transition to the next state
+                currentState = State.STOPPING;
                 break;
             case STOPPING:
                 decision.put("action", "stop");
                 break;
         }
-
         logger.info("** Decision: {}", decision.toString());
         return decision.toString();
     }
