@@ -26,6 +26,7 @@ public class Explorer implements IExplorerRaid {
         logger.info("The drone is facing {}", direction);
         logger.info("Battery level is {}", batteryLevel);
     }
+    /*
     private int flyCount = 0;
     private final int FlyIterations = 25;
     private enum State {Fly, Scan, Echo, Stop, Turn, Fly2, Uturn}
@@ -78,6 +79,26 @@ public class Explorer implements IExplorerRaid {
         logger.info("** Decision: {}", decision.toString());
         return decision.toString();
     }
+     */
+    private enum State {Scan, Stop}
+    private State currentState = State.Scan;
+
+    @Override
+    public String takeDecision(){
+        JSONObject decision = new JSONObject();
+        switch (currentState){
+            case Stop:
+                decision.put("action", "stop");
+                break;
+            case Scan:
+                decision.put("action", "scan");
+                currentState = State.Stop;
+                break;
+        }
+        logger.info("** Decision: {}", decision.toString());
+        return decision.toString();
+    }
+
     @Override
     public void acknowledgeResults(String s) {
         JSONObject response = new JSONObject(new JSONTokener(new StringReader(s)));
