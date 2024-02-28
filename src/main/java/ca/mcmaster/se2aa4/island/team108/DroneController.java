@@ -18,23 +18,19 @@ public class DroneController {
                if (!extraInfo.has("found")) {
                     move = findIsland.noLandDetected(prevAction);
                } else {
-                    JSONArray biomesArray = extraInfo.getJSONArray("biomes");
-                    boolean containsGround = biomesArray.toList().contains("GROUND");
-                    if (containsGround) { // If the island is found using "echo", change direction
+                    if (extraInfo.getString("found").equals("GROUND")) {
                          JSONObject direction = new JSONObject();
                          direction.put("direction", "S");
                          move.put("parameters", direction);
                          move.put("action", "heading");
-                         currentState = State.MoveToIsland; // switch state
+                         currentState = State.MoveToIsland;
                     } else {
                          move = findIsland.noLandDetected(prevAction);
                     }
-
                }
-
           }
 
-          else if (currentState.equals(State.MoveToIsland)) { // Moves forward until "scan" returns "BEACH"
+          else if (currentState.equals(State.MoveToIsland)) {
                if (extraInfo.has("biomes")) {
                     JSONArray biomesArray = extraInfo.getJSONArray("biomes");
                     boolean containsBeach = biomesArray.toList().contains("BEACH");
@@ -46,10 +42,9 @@ public class DroneController {
                } else {
                     move = findIsland.landDetected(prevAction);
                }
-
           }
 
-          else if (currentState.equals(State.Creek)) { // No implementation yet
+          else if (currentState.equals(State.Creek)) {
                move.put("action", "stop");
           }
 
