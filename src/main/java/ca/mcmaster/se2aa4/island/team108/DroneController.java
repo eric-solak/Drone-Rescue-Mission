@@ -6,9 +6,11 @@ public class DroneController {
      private enum State {FindIsland, MoveToIsland, Creek, EmergencySite}
      private State currentState = State.FindIsland;
      private FindIsland findIsland;
+     private GridSearch gridSearch;
 
      public DroneController(){
           this.findIsland = new FindIsland();
+          this.gridSearch = new GridSearch();
      }
 
      public JSONObject getNextMove(JSONObject extraInfo, JSONObject prevAction, Direction heading) {
@@ -20,8 +22,15 @@ public class DroneController {
                     move = findIsland.noLandDetected(prevAction, heading);
                } else {
                     if (extraInfo.getString("found").equals("GROUND")) {
+                         JSONObject parameters = prevAction.getJSONObject("parameters");
+                         Direction echoDirection = (Direction) parameters.get("direction");
+
                          JSONObject direction = new JSONObject();
-                         direction.put("direction", "S");
+                         if (echoDirection == heading.turnLeft()) {
+                              direction.put("direction", heading.turnLeft());
+                         } else {
+                              direction.put("direction", heading.turnRight());
+                         }
                          move.put("parameters", direction);
                          move.put("action", "heading");
                          currentState = State.MoveToIsland;
@@ -53,7 +62,7 @@ public class DroneController {
 
           // STATE: Look for emergency site (Grid Search)
           else {
-               move.put("action", "stop");
+               move = gridSearch.nextMove(extraInfo, prevAction, heading);
           }
           return move;
      }
