@@ -16,6 +16,7 @@ public class Explorer implements IExplorerRaid {
 
     public int counter = 0;
     Direction heading;
+    Energy batteryLevel;
     @Override
     public void initialize(String s) {
         logger.info("** Initializing the Exploration Command Center");
@@ -23,7 +24,7 @@ public class Explorer implements IExplorerRaid {
         logger.info("** Initialization info:\n {}",info.toString(2));
         String direction = info.getString("heading");
         heading = Direction.valueOf(direction);
-        Integer batteryLevel = info.getInt("budget");
+        batteryLevel = new Energy(info.getInt("budget"));
         logger.info("The drone is facing {}", direction);
         logger.info("Battery level is {}", batteryLevel);
     }
