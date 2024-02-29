@@ -15,13 +15,14 @@ public class Explorer implements IExplorerRaid {
     private final Logger logger = LogManager.getLogger();
 
     public int counter = 0;
-
+    Direction heading;
     @Override
     public void initialize(String s) {
         logger.info("** Initializing the Exploration Command Center");
         JSONObject info = new JSONObject(new JSONTokener(new StringReader(s)));
         logger.info("** Initialization info:\n {}",info.toString(2));
         String direction = info.getString("heading");
+        heading = Direction.valueOf(direction);
         Integer batteryLevel = info.getInt("budget");
         logger.info("The drone is facing {}", direction);
         logger.info("Battery level is {}", batteryLevel);
@@ -39,7 +40,7 @@ public class Explorer implements IExplorerRaid {
     JSONObject prevAction = new JSONObject();
     @Override
     public String takeDecision() {
-        JSONObject nextAction = droneController.getNextMove(extraInfo, prevAction);
+        JSONObject nextAction = droneController.getNextMove(extraInfo, prevAction, heading);
         prevAction = nextAction;
 
         JSONObject decision = new JSONObject();
