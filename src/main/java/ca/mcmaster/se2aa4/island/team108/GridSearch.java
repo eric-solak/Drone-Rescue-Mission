@@ -7,9 +7,21 @@ import org.json.JSONObject;
 
 import java.util.Objects;
 
+
 public class GridSearch {
     private final Logger logger = LogManager.getLogger();
+
+    /**
+     * Calculates the next move during gridSearch
+     * @param extraInfo JSONObject that contains the results of the previous action.
+     * @param prev JSONObject of the previous action
+     * @param heading Current direction the drone is facing
+     * @return JSONObject of the next move
+     */
+    // TODO: Implement Map. Map (or a class that uses Map) can tell GridSearch
+    //  // which tiles have been searched, so GridSearch will know when it has to turnRight or turnLeft
     public JSONObject nextMove(JSONObject extraInfo, JSONObject prev, Direction heading) {
+        logger.info("GRID SEARCH REACHED");
         JSONObject output = new JSONObject();
 
         String prevAction = prev.getString("action");
@@ -29,12 +41,9 @@ public class GridSearch {
                 output.put("action", "heading");
             }
         } else { // prevAction == "heading"
-            // When Map is implemented, this can be too. Map (or a class that uses Map) can tell GridSearch
-            // which tiles have been searched, so GridSearch will know when it has to turnRight or turnLeft
+
             output.put("action","stop");
         }
-
-
 
         return output;
     }

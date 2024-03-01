@@ -12,7 +12,7 @@ public class PerimeterSearch {
 
     /**
      * Calculates the next move during perimeterSearch
-     * @param extraInfo JSONObject that contains the results of the previous action.
+     * @param extraInfo JSONObject that contains the results of the previous action
      * @param prev JSONObject of the previous action
      * @param heading Current direction the drone is facing
      * @return JSONObject of the next move

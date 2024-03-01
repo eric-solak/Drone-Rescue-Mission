@@ -7,28 +7,39 @@ public class DroneController {
      private State currentState = State.FindIsland;
      private FindIsland findIsland;
      private GridSearch gridSearch;
+     private PerimeterSearch perimeterSearch;
 
      public DroneController(){
           this.findIsland = new FindIsland();
           this.gridSearch = new GridSearch();
+          this.perimeterSearch = new PerimeterSearch();
      }
 
+     /**
+      * Gets the next move based on the current state of the program
+      * STATES: { FindIsland, MoveToIsland, Creek (PerimeterSearch), EmergencySite (GridSearch) }
+      * FindIsland -> MoveToIsland -> EmergencySite -> Creek -> Stop
+      * @param extraInfo JSONObject that contains the results of the previous action
+      * @param prevAction JSONObject of the previous action
+      * @param heading Current direction the drone is facing
+      * @return JSONObject of the next move
+      */
      public JSONObject getNextMove(JSONObject extraInfo, JSONObject prevAction, Direction heading) {
           JSONObject move = new JSONObject();
-
-          // STATE: No Island Found
+          
+          // Search for island
           if (currentState.equals(State.FindIsland)) {
                if (!extraInfo.has("found")) {
                     move = findIsland.noLandDetected(prevAction, heading);
                } else {
-                    if (extraInfo.getString("found").equals("GROUND")) {
+                    if (extraInfo.getString("found").equals("GROUND")) { // Ground detected in ECHO command
                          JSONObject parameters = prevAction.getJSONObject("parameters");
                          Direction echoDirection = (Direction) parameters.get("direction");
 
                          JSONObject direction = new JSONObject();
-                         if (echoDirection == heading.turnLeft()) {
+                         if (echoDirection == heading.turnLeft()) { // If the ECHO commands direction was left, turn left
                               direction.put("direction", heading.turnLeft());
-                         } else {
+                         } else { // If the ECHO commands direction was right, turn right
                               direction.put("direction", heading.turnRight());
                          }
                          move.put("parameters", direction);
@@ -40,12 +51,14 @@ public class DroneController {
                }
           }
 
-          // STATE: Island is found, fly to it
+          // Traverse to island
           else if (currentState.equals(State.MoveToIsland)) {
                if (extraInfo.has("biomes")) {
                     JSONArray biomesArray = extraInfo.getJSONArray("biomes");
-                    boolean containsBeach = biomesArray.toList().contains("BEACH");
-                    if (containsBeach) {
+                    boolean containsOcean = biomesArray.toList().contains("OCEAN");
+                    int numBiomes = biomesArray.length();
+                    if (!containsOcean || numBiomes > 1) {
+                         move = perimeterSearch.nextMove(extraInfo, prevAction, heading);
                          currentState = State.Creek;
                     } else {
                          move = findIsland.landDetected(prevAction);
@@ -55,14 +68,16 @@ public class DroneController {
                }
           }
 
-          // STATE: Look for creeks (Perimeter Search)
+          // Look for creeks (Perimeter Search)
           else if (currentState.equals(State.Creek)) {
-               move.put("action", "stop");
+               move.put("action","stop");
+               //move = perimeterSearch.nextMove(extraInfo, prevAction, heading);
           }
 
-          // STATE: Look for emergency site (Grid Search)
+          // Look for emergency site (Grid Search)
           else {
-               move = gridSearch.nextMove(extraInfo, prevAction, heading);
+               move.put("action","stop");
+               // move = gridSearch.nextMove(extraInfo, prevAction, heading);
           }
           return move;
      }
