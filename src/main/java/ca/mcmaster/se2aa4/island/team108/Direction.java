@@ -1,6 +1,6 @@
 package ca.mcmaster.se2aa4.island.team108;
 
-// Direction/Compass Enum
+// Direction Enum
 public enum Direction {
     N, S, E, W;
 

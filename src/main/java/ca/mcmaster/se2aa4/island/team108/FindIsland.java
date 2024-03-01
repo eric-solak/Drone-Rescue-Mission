@@ -9,7 +9,12 @@ import java.util.Objects;
 public class FindIsland {
     private final Logger logger = LogManager.getLogger();
 
-    // Repeat "fly", "scan", and "echo" in both the left and right directions until land is found
+    /**
+     * Repeat "fly", "scan", and "echo" in both the left and right directions until land is found
+     * @param prev JSONObject of the previous action
+     * @param heading Current direction the drone is facing
+     * @return JSONObject of the next move
+     */
     public JSONObject noLandDetected(JSONObject prev, Direction heading) {
         JSONObject output = new JSONObject();
 
@@ -53,9 +58,14 @@ public class FindIsland {
         return output;
     }
 
-    // Land detected, fly in a straight line until the beach is reached
-    // This should be modified, as echo returns the distance to the land. It is unnecessary to
-    // call scan when the distance to the land is already known
+    /**
+     * Called when land is detected...
+     * Flies in a straight line until the beach is reached
+     * @param prev JSONObject of the previous action
+     * @return JSONObject of the next move
+     */
+    // TODO: This should be modified, as echo returns the distance to the land. It is unnecessary to
+    //  It is unnecessary to call scan when the distance to the land is already known
     public JSONObject landDetected(JSONObject prev) {
         JSONObject output = new JSONObject();
         if (prev.has("action")) {
