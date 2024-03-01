@@ -10,13 +10,16 @@ import org.json.JSONTokener;
 
 public class Explorer implements IExplorerRaid {
 
-
-
     private final Logger logger = LogManager.getLogger();
-
-    public int counter = 0;
+    private final DroneController droneController;
     Direction heading;
     Energy batteryLevel;
+
+    public Explorer() {
+        // Instantiate DroneController
+        this.droneController = new DroneController();
+    }
+
     @Override
     public void initialize(String s) {
         logger.info("** Initializing the Exploration Command Center");
@@ -30,15 +33,9 @@ public class Explorer implements IExplorerRaid {
     }
 
 
-    private final DroneController droneController;
-
-    public Explorer() {
-        // Instantiate DroneController
-        this.droneController = new DroneController();
-    }
-
     private JSONObject extraInfo = new JSONObject();
     JSONObject prevAction = new JSONObject();
+
     @Override
     public String takeDecision() {
         JSONObject nextAction = droneController.getNextMove(extraInfo, prevAction, heading);
@@ -57,6 +54,13 @@ public class Explorer implements IExplorerRaid {
             // Retrieve the value of "parameters" key
             JSONObject parameters = nextAction.getJSONObject("parameters");
             decision.put("parameters", parameters);
+
+            // Update the direction if drone turned left or right
+            String action = decision.getString("action");
+            if (parameters.has("direction") && action.equals("heading")) {
+                heading = (Direction) parameters.get("direction");
+                logger.info("Direction changed to: " + heading);
+            }
         }
 
         logger.info("** Decision: {}", decision.toString());
