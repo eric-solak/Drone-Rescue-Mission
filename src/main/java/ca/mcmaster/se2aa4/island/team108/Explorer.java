@@ -1,6 +1,8 @@
 package ca.mcmaster.se2aa4.island.team108;
 
 import java.io.StringReader;
+import java.util.Objects;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -35,10 +37,13 @@ public class Explorer implements IExplorerRaid {
 
     private JSONObject extraInfo = new JSONObject();
     JSONObject prevAction = new JSONObject();
+    JSONObject prevPrevAction = new JSONObject();
 
     @Override
     public String takeDecision() {
+
         JSONObject nextAction = droneController.getNextMove(extraInfo, prevAction, heading);
+        prevPrevAction = prevAction;
         prevAction = nextAction;
 
         JSONObject decision = new JSONObject();
@@ -73,12 +78,14 @@ public class Explorer implements IExplorerRaid {
     public void acknowledgeResults(String s) {
         JSONObject response = new JSONObject(new JSONTokener(new StringReader(s)));
         logger.info("** Response received:\n"+response.toString(2));
-        Integer cost = response.getInt("cost");
+        Energy cost = new Energy(response.getInt("cost"));
         logger.info("The cost of the action was {}", cost);
         String status = response.getString("status");
         logger.info("The status of the drone is {}", status);
         extraInfo = response.getJSONObject("extras");
         logger.info("Additional information received: {}", extraInfo);
+        batteryLevel = batteryLevel.subtract(cost);
+        logger.info("The current battery level is now {}", batteryLevel);
     }
 
     @Override
