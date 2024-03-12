@@ -16,6 +16,7 @@ public class FindIsland {
      * @return JSONObject of the next move
      */
     public JSONObject noLandDetected(JSONObject prev, Direction heading) {
+        DroneCommand droneCommand = new MoveDrone();
         JSONObject output = new JSONObject();
 
         try {
@@ -24,12 +25,16 @@ public class FindIsland {
                 logger.info("This is the prev action: " + prevAction);
 
                 if (Objects.equals(prevAction, "fly")) {
-                    output.put("action", "scan");
+                    output = droneCommand.droneScan();
                 } else if (Objects.equals(prevAction, "scan")) {
+                    output = droneCommand.droneEcho(heading.turnLeft());
+                    /*
                     output.put("action", "echo");
                     JSONObject parameters = new JSONObject();
                     parameters.put("direction", heading.turnLeft());
                     output.put("parameters", parameters);
+
+                     */
                 } else if (Objects.equals(prevAction, "echo")){
                     JSONObject parameters = prev.getJSONObject("parameters");
                     Direction direction = (Direction) parameters.get("direction");
@@ -39,22 +44,27 @@ public class FindIsland {
 
                     if (direction == heading.turnLeft()) { // First echo iteration
                         logger.info("Condition is true: direction equals heading.turnLeft()");
+                        output = droneCommand.droneEcho(heading.turnRight());
+                        /*
                         output.put("action", "echo");
                         parameters.put("direction", heading.turnRight());
                         output.put("parameters", parameters);
+
+                         */
                     } else { // Second echo iteration has been called, repeat the cycle and go back to "fly"
-                        output.put("action", "fly");
+                        output = droneCommand.dronefly();
                     }
                 }
             } else {
                 logger.info("Straight to else statement");
-                output.put("action", "fly"); // Default action
+                output = droneCommand.dronefly(); // Default action
             }
         } catch (Exception e) {
             logger.error("Exception: " + e.getMessage());
             output.put("action", "fly");
         }
 
+        // output = droneCommand.droneTurn(heading.turnRight());
         return output;
     }
 

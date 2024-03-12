@@ -25,6 +25,7 @@ public class DroneController {
       * @return JSONObject of the next move
       */
      public JSONObject getNextMove(JSONObject extraInfo, JSONObject prevAction, Direction heading) {
+          DroneCommand droneCommand = new MoveDrone();
           JSONObject move = new JSONObject();
           
           // Search for island
@@ -38,12 +39,10 @@ public class DroneController {
 
                          JSONObject direction = new JSONObject();
                          if (echoDirection == heading.turnLeft()) { // If the ECHO commands direction was left, turn left
-                              direction.put("direction", heading.turnLeft());
+                              move = droneCommand.droneTurn(heading.turnLeft());
                          } else { // If the ECHO commands direction was right, turn right
-                              direction.put("direction", heading.turnRight());
+                              move = droneCommand.droneTurn(heading.turnRight());
                          }
-                         move.put("parameters", direction);
-                         move.put("action", "heading");
                          currentState = State.MoveToIsland;
                     } else {
                          move = findIsland.noLandDetected(prevAction, heading);
@@ -76,7 +75,7 @@ public class DroneController {
 
           // Look for emergency site (Grid Search)
           else {
-               move.put("action","stop");
+               move = droneCommand.droneStop();
                // move = gridSearch.nextMove(extraInfo, prevAction, heading);
           }
           return move;
