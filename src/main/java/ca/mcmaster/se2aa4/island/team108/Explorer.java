@@ -32,6 +32,7 @@ public class Explorer implements IExplorerRaid {
         batteryLevel = new Energy(info.getInt("budget"));
         logger.info("The drone is facing {}", direction);
         logger.info("Battery level is {}", batteryLevel);
+        System.out.println("hhe");
     }
 
 
@@ -91,6 +92,7 @@ public class Explorer implements IExplorerRaid {
     @Override
     public String deliverFinalReport() {
         return "no creek found";
+        
     }
 
 }
