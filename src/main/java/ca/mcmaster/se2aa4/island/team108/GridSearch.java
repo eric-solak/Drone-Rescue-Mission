@@ -21,14 +21,23 @@ public class GridSearch {
         SCAN_FLY
     }
 
-    public GridSearch() {
+    private Position dronePosition = new Position(1, 1);
+
+      // Existing code
+
+    private Map islandMap;
+
+    public GridSearch(Map map) {
+         this.islandMap = map;
     }
 
     public JSONObject nextMove(JSONObject extraInfo, JSONObject prev, Direction heading) {
         JSONObject output = new JSONObject();
         JSONArray biomesArray = extraInfo.optJSONArray("biomes");
+        JSONArray creekArray = extraInfo.optJSONArray("creeks");
         boolean containsWaterOnly = biomesArray != null && biomesArray.toList().contains("OCEAN") && biomesArray.toList().size() == 1;
         boolean containsWater = biomesArray != null && biomesArray.toList().contains("OCEAN");
+        boolean containsCreek = creekArray != null && creekArray.length() > 0;
         String turnDirection = "";
         if (counter >= 700){
             return output;
@@ -39,27 +48,42 @@ public class GridSearch {
                     if (containsWaterOnly) {
                         currentState = State.PREPARING_FOR_UTURN;
                         output.put("action", "scan");
+                        //if a creek is found then add it into the hashmap along with drones current coordinates
+                        if(containsCreek){
+                            islandMap.addSite(turnDirection, dronePosition);
+                        }
                     } else {
                         currentState = State.FLYING_STRAIGHT;
                         output.put("action", "fly");
+                        islandMap.updateDronePosition(heading);//continue flying and update drones position
                     }
                     break;
 
                 case FLYING_STRAIGHT:
                     currentState = State.SCANNING;
                     output.put("action", "scan");
+                    if(containsCreek){
+                        islandMap.addSite(turnDirection, dronePosition);
+                    }
                     break;
 
                 case FLY:
                     output.put("action", "scan");
+                    if(containsCreek){
+                        islandMap.addSite(turnDirection, dronePosition);
+                    }
                     currentState = State.SCAN_FLY;
                     break;
                 case SCAN_FLY:
                     if (containsWater){
                         output.put("action", "fly");
+                        islandMap.updateDronePosition(heading);
                         currentState = State.FLY;
                     } else {
                         output.put("action", "scan");
+                        if(containsCreek){
+                            islandMap.addSite(turnDirection, dronePosition);
+                        }
                         currentState = State.FLYING_STRAIGHT;
                     }
                     break;
@@ -91,6 +115,7 @@ public class GridSearch {
                     // Determining new direction based on current heading
                     Direction newDirectionn = heading.turnLeft();
                     turnDirection = "left";
+                    islandMap.updateDronePositionForTurning(turnDirection, newDirectionn);
                     
 
                     // Setting parameters for direction change
@@ -107,6 +132,8 @@ public class GridSearch {
                     // Determining new direction based on current heading
                     Direction newDirectionnn = heading.turnRight();
                     turnDirection = "right";
+                    islandMap.updateDronePositionForTurning(turnDirection, newDirectionnn);
+                    
 
                     // Setting parameters for direction change
                     parametersss.put("direction", newDirectionnn);

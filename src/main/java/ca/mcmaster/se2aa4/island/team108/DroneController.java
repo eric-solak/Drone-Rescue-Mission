@@ -10,13 +10,17 @@ public class DroneController {
      private State currentState = State.FindIsland;
      private FindIsland findIsland;
      private GridSearch gridSearch;
+     private Map map;
      private PerimeterSearch perimeterSearch;
 
      public DroneController(){
+          this.map = new Map();
           this.findIsland = new FindIsland();
-          this.gridSearch = new GridSearch();
+          this.gridSearch = new GridSearch(map);
           this.perimeterSearch = new PerimeterSearch();
      }
+
+     
 
      /**
       * Gets the next move based on the current state of the program
@@ -85,6 +89,9 @@ public class DroneController {
                logger.info("Moving To Grid Search");
                //move.put("action","stop");
                move = gridSearch.nextMove(extraInfo, prevAction, heading);
+               logger.info("printing current hashmap");
+               map.printSiteCoordinates();
+               logger.info("done");
           }
           return move;
      }

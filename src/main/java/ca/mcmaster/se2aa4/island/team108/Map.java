@@ -13,7 +13,7 @@ public class Map {
 
     
 
-    private Map(){
+    public Map(){
         siteCoordinates = new HashMap<>();
     }
 
@@ -21,6 +21,15 @@ public class Map {
         
         siteCoordinates.put(siteType, dronePosition); //i.e "creeks" : 5,5 example of what would be storied in hashmap
         
+    }
+
+    //test function to see whats stored in hashmap
+    public void printSiteCoordinates() {
+        System.out.println("Site coordinates:");
+        for (String siteType : siteCoordinates.keySet()) {
+            Position position = siteCoordinates.get(siteType);
+            System.out.println("Site Type: " + siteType + ", Position: " + position.toString());
+        }
     }
     
 
@@ -45,10 +54,10 @@ public class Map {
         }
     }
 
-    public void updateDronePositionForTurning (String turnDirection, Direction heading) {
+    public void updateDronePositionForTurning (String turnDirection, Direction newDirection) {
         switch (turnDirection) {
             case "left":
-                switch (heading) {
+                switch (newDirection) {
                     case N:
                         dronePosition.y--;
                         dronePosition.x--;
@@ -70,7 +79,7 @@ public class Map {
                 }
                 break;
             case "right":
-                switch (heading) {
+                switch (newDirection) {
                     case N:
                         dronePosition.y--;
                         dronePosition.x++;
@@ -92,6 +101,7 @@ public class Map {
     
         }
     }
+
 
 
 
