@@ -7,6 +7,7 @@ public class MoveDrone implements DroneCommand {
     public JSONObject dronefly() throws Exception {
         JSONObject output = new JSONObject();
         return output.put("action", "fly");
+        
     }
 
     @Override
