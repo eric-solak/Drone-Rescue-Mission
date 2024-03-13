@@ -3,11 +3,22 @@ package ca.mcmaster.se2aa4.island.team108;
 import org.json.JSONObject;
 
 public class MoveDrone implements DroneCommand {
+
+
+    private Position dronePosition = new Position(1, 1);
+
+    private Map islandMap;
+
+    public GridSearch(Map map) {
+         this.islandMap = map;
+    }
+
     @Override
-    public JSONObject dronefly() throws Exception {
+    public JSONObject dronefly(Direction heading) throws Exception {
         JSONObject output = new JSONObject();
         return output.put("action", "fly");
         
+
     }
 
     @Override
