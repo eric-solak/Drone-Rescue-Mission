@@ -14,5 +14,6 @@ public interface DroneCommand {
     JSONObject droneEcho(Direction heading) throws IllegalStateException;
     JSONObject droneTurn(Direction heading) throws IllegalStateException;
     JSONObject droneStop();
+    Position dronePosition();
 
 }
