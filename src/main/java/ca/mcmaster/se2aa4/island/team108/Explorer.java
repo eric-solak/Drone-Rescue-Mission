@@ -57,6 +57,7 @@ public class Explorer implements IExplorerRaid {
         }
 
         if (nextAction.has("parameters")) {
+            logger.info("Checking heading parameters");
             // Retrieve the value of "parameters" key
             JSONObject parameters = nextAction.getJSONObject("parameters");
             decision.put("parameters", parameters);

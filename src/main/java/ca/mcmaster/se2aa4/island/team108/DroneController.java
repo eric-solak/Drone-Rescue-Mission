@@ -1,8 +1,11 @@
 package ca.mcmaster.se2aa4.island.team108;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class DroneController {
+     private final Logger logger = LogManager.getLogger();
      private enum State {FindIsland, MoveToIsland, Creek, EmergencySite}
      private State currentState = State.FindIsland;
      private FindIsland findIsland;
@@ -26,7 +29,7 @@ public class DroneController {
       */
      public JSONObject getNextMove(JSONObject extraInfo, JSONObject prevAction, Direction heading) {
           JSONObject move = new JSONObject();
-          
+
           // Search for island
           if (currentState.equals(State.FindIsland)) {
                if (!extraInfo.has("found")) {
@@ -44,6 +47,7 @@ public class DroneController {
                          }
                          move.put("parameters", direction);
                          move.put("action", "heading");
+                         logger.info("MOVETOISLAND:" + move);
                          currentState = State.MoveToIsland;
                     } else {
                          move = findIsland.noLandDetected(prevAction, heading);
@@ -58,8 +62,9 @@ public class DroneController {
                     boolean containsOcean = biomesArray.toList().contains("OCEAN");
                     int numBiomes = biomesArray.length();
                     if (!containsOcean || numBiomes > 1) {
-                         move = perimeterSearch.nextMove(extraInfo, prevAction, heading);
-                         currentState = State.Creek;
+                         //move = perimeterSearch.nextMove(extraInfo, prevAction, heading);
+                         currentState = State.EmergencySite;
+                         move = findIsland.landDetected(prevAction);
                     } else {
                          move = findIsland.landDetected(prevAction);
                     }
@@ -67,7 +72,7 @@ public class DroneController {
                     move = findIsland.landDetected(prevAction);
                }
           }
-
+          /*
           // Look for creeks (Perimeter Search)
           else if (currentState.equals(State.Creek)) {
                move.put("action","stop");
@@ -75,9 +80,11 @@ public class DroneController {
           }
 
           // Look for emergency site (Grid Search)
-          else {
-               move.put("action","stop");
-               // move = gridSearch.nextMove(extraInfo, prevAction, heading);
+           */
+          else if (currentState.equals(State.EmergencySite)) {
+               logger.info("Moving To Grid Search");
+               //move.put("action","stop");
+               move = gridSearch.nextMove(extraInfo, prevAction, heading);
           }
           return move;
      }
