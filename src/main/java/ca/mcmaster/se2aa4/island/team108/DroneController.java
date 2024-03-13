@@ -1,8 +1,11 @@
 package ca.mcmaster.se2aa4.island.team108;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class DroneController {
+     private final Logger logger = LogManager.getLogger();
      private enum State {FindIsland, MoveToIsland, Creek, EmergencySite}
      private State currentState = State.FindIsland;
      private FindIsland findIsland;
@@ -57,8 +60,9 @@ public class DroneController {
                     boolean containsOcean = biomesArray.toList().contains("OCEAN");
                     int numBiomes = biomesArray.length();
                     if (!containsOcean || numBiomes > 1) {
-                         move = perimeterSearch.nextMove(extraInfo, prevAction, heading);
-                         currentState = State.Creek;
+                         //move = perimeterSearch.nextMove(extraInfo, prevAction, heading);
+                         currentState = State.EmergencySite;
+                         move = findIsland.landDetected(prevAction);
                     } else {
                          move = findIsland.landDetected(prevAction);
                     }
@@ -66,17 +70,11 @@ public class DroneController {
                     move = findIsland.landDetected(prevAction);
                }
           }
-
-          // Look for creeks (Perimeter Search)
-          else if (currentState.equals(State.Creek)) {
-               move.put("action","stop");
-               //move = perimeterSearch.nextMove(extraInfo, prevAction, heading);
-          }
-
           // Look for emergency site (Grid Search)
-          else {
-               move = droneCommand.droneStop();
-               // move = gridSearch.nextMove(extraInfo, prevAction, heading);
+          else if (currentState.equals(State.EmergencySite)) {
+               logger.info("MOVING TO GRID SEARCH");
+               //move = droneCommand.droneStop();
+               move = gridSearch.nextMove(extraInfo, prevAction, heading);
           }
           return move;
      }
