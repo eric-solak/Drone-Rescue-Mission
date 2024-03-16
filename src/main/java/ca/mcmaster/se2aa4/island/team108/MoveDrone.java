@@ -9,12 +9,16 @@ public class MoveDrone implements DroneCommand {
 
     private Map islandMap;
 
+    public MoveDrone() {
+
+    }
+
     public MoveDrone(Map map) {
          this.islandMap = map;
     }
 
     @Override
-    public JSONObject dronefly(Direction heading) {
+    public JSONObject dronefly() {
         JSONObject output = new JSONObject();
         return output.put("action", "fly");
         

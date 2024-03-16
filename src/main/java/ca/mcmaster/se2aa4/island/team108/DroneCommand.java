@@ -9,11 +9,12 @@ import org.json.JSONObject;
  */
 
 public interface DroneCommand {
-    JSONObject dronefly() throws Exception; // OutOfRange Exception
-    JSONObject droneScan() throws Exception; // BatteryLevel Exception
+    JSONObject dronefly() throws Exception;
+    JSONObject droneScan() throws Exception;
     JSONObject droneEcho(Direction heading) throws IllegalStateException;
     JSONObject droneTurn(Direction heading) throws IllegalStateException;
     JSONObject droneStop();
-    Position dronePosition();
+
+
 
 }
