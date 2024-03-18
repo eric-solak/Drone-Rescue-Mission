@@ -14,12 +14,14 @@ public class Explorer implements IExplorerRaid {
 
     private final Logger logger = LogManager.getLogger();
     private final DroneController droneController;
+    private final MissionLogger missionLogger;
     Direction heading;
     Energy batteryLevel;
 
     public Explorer() {
         // Instantiate DroneController
         this.droneController = new DroneController();
+        this.missionLogger = new MissionLogger();
     }
 
     @Override
@@ -69,7 +71,6 @@ public class Explorer implements IExplorerRaid {
         }
 
         logger.info("** Decision: {}", decision.toString());
-
         return decision.toString();
     }
 
@@ -78,6 +79,7 @@ public class Explorer implements IExplorerRaid {
     public void acknowledgeResults(String s) {
         JSONObject response = new JSONObject(new JSONTokener(new StringReader(s)));
         logger.info("** Response received:\n"+response.toString(2));
+
         Energy cost = new Energy(response.getInt("cost"));
         logger.info("The cost of the action was {}", cost);
         String status = response.getString("status");
@@ -86,11 +88,23 @@ public class Explorer implements IExplorerRaid {
         logger.info("Additional information received: {}", extraInfo);
         batteryLevel = batteryLevel.subtract(cost);
         logger.info("The current battery level is now {}", batteryLevel);
+
+        missionLogger.input(extraInfo);
+        if (response.has("action")) {
+            if (response.get("action") == "stop") {
+                deliverFinalReport();
+            }
+        }
     }
 
     @Override
     public String deliverFinalReport() {
-        return "no creek found";
+        logger.info("Final Report Reached");
+        String creeks = missionLogger.getCreeks().toString();
+        String sites = missionLogger.getSites().toString();
+        logger.info("Creeks {}", creeks);
+        logger.info("Sites {}", sites);
+        return "No final report";
     }
 
 }
