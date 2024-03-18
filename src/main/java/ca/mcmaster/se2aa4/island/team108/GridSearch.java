@@ -26,17 +26,14 @@ public class GridSearch {
     
     public JSONObject nextMove(JSONObject extraInfo, JSONObject prev, Direction heading) {
 
-        logger.info("GRID SEARCH REACHED");
         JSONObject output = new JSONObject();
 
         JSONArray biomesArray = extraInfo.optJSONArray("biomes");
         boolean containsWaterOnly = biomesArray != null && biomesArray.toList().contains("OCEAN") && biomesArray.toList().size() == 1;
         String prevAction = prev.getString("action");
-        logger.info("This is the prev action: " + prevAction);
 
-        logger.info(commandQ.toString());
+        logger.info("Current command Queue: " + commandQ.toString());
         if (!commandQ.isEmpty()){
-            logger.info("TESTING is empty");
             return commandQ.remove();
         }
 
@@ -55,56 +52,45 @@ public class GridSearch {
                     commandQ.add(droneCommand.dronefly());
                 }
             } else if (Objects.equals(prevAction, "heading")) {
+                commandQ.add(droneCommand.droneScan());
                 commandQ.add(droneCommand.droneEcho(heading));
             } else if (Objects.equals(prevAction, "echo")) {
-                commandQ.add(droneCommand.dronefly());
-                commandQ.add(droneCommand.dronefly());
-                commandQ.add(droneCommand.dronefly());
-                commandQ.add(droneCommand.dronefly());
-            } else {
-                commandQ.add(droneCommand.dronefly());
-                commandQ.add(droneCommand.dronefly());
-                commandQ.add(droneCommand.dronefly());
-                commandQ.add(droneCommand.dronefly());
+                if (extraInfo.getString("found").equals("GROUND")) {
+                    int distance_to_shore = extraInfo.getInt("range");
+                    for (int i=0;i<=distance_to_shore;i++){
+                        commandQ.add(droneCommand.dronefly());
+                    }
+                } else {
+                    logger.info("End of Island: Grid Search Complete");
+                    return droneCommand.droneStop();
+                }
             }
 
         } catch (Exception e){
-            logger.info("Grid Search Error");
+            logger.info("Grid Search Error: " + e);
             return output.put("action", "stop");
         }
-        logger.info("This is the next command in grid search:" + commandQ.peek().toString());
-        if (isNextTurnLeft <=5){
-            return commandQ.remove();
-        } else {
-            return droneCommand.droneStop();
+        if (!commandQ.isEmpty()) {
+            logger.info("Next command in grid search:" + commandQ.peek().toString());
         }
-
-        /*
-        WORKFLOW
-
-            Alternate between fly and scan until we reach edge of island
-            Once we reach the edge perform a special uturn
-            Check to see if were at the edge of the island (echo forward)
-                if we are, we are done
-                if not we keep scanning and flying
-
-         */
+        return commandQ.remove();
 
     }
     private void leftUTurn(Direction heading) throws Exception {
-        commandQ.add(droneCommand.droneTurn(heading.turnRight()));
-        commandQ.add(droneCommand.droneTurn(heading.turnRight().turnLeft()));
-        commandQ.add(droneCommand.droneTurn(heading.turnRight().turnLeft().turnLeft()));
+        //relative to current direction before uturn
+        commandQ.add(droneCommand.droneTurn(heading.turnLeft()));
         commandQ.add(droneCommand.dronefly());
-        commandQ.add(droneCommand.droneTurn(heading.turnRight().turnLeft().turnLeft().turnLeft()));
+        commandQ.add(droneCommand.droneTurn(heading.turnLeft().turnLeft()));
+        commandQ.add(droneCommand.droneTurn(heading.turnLeft().turnLeft().turnLeft()));
+        commandQ.add(droneCommand.droneTurn(heading.turnLeft().turnLeft()));
 
     }
     private void rightUTurn(Direction heading) throws Exception {
-        commandQ.add(droneCommand.droneTurn(heading.turnLeft()));
-        commandQ.add(droneCommand.droneTurn(heading.turnLeft().turnRight()));
-        commandQ.add(droneCommand.droneTurn(heading.turnLeft().turnRight().turnRight()));
+        commandQ.add(droneCommand.droneTurn(heading.turnRight()));
         commandQ.add(droneCommand.dronefly());
-        commandQ.add(droneCommand.droneTurn(heading.turnLeft().turnRight().turnLeft().turnLeft()));
+        commandQ.add(droneCommand.droneTurn(heading.turnRight().turnRight()));
+        commandQ.add(droneCommand.droneTurn(heading.turnRight().turnRight().turnRight()));
+        commandQ.add(droneCommand.droneTurn(heading.turnRight().turnRight()));
 
     }
 }

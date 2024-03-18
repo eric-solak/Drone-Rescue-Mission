@@ -50,6 +50,7 @@ public class Explorer implements IExplorerRaid {
 
         JSONObject decision = new JSONObject();
 
+
         if (nextAction.has("action")) {
             String action = nextAction.getString("action");
             decision.put("action", action);
