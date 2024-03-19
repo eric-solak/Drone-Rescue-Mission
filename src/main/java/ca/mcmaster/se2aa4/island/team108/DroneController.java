@@ -12,9 +12,9 @@ public class DroneController {
      private GridSearch gridSearch;
      private PerimeterSearch perimeterSearch;
 
-     public DroneController(){
+     public DroneController(Map map){
           this.findIsland = new FindIsland();
-          this.gridSearch = new GridSearch();
+          this.gridSearch = new GridSearch(map);
           this.perimeterSearch = new PerimeterSearch();
      }
 

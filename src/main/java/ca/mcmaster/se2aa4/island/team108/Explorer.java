@@ -15,13 +15,20 @@ public class Explorer implements IExplorerRaid {
     private final Logger logger = LogManager.getLogger();
     private final DroneController droneController;
     private final MissionLogger missionLogger;
+    private final Map map;
+    private final GridSearch gridSearch;
+    
     Direction heading;
     Energy batteryLevel;
 
     public Explorer() {
         // Instantiate DroneController
-        this.droneController = new DroneController();
+        this.map = new Map();
+        this.gridSearch = new GridSearch(map);
+        this.droneController = new DroneController(map);
         this.missionLogger = new MissionLogger();
+       
+        
     }
 
     @Override
@@ -100,11 +107,18 @@ public class Explorer implements IExplorerRaid {
 
     @Override
     public String deliverFinalReport() {
+        
         logger.info("Final Report Reached");
         String creeks = missionLogger.getCreeks().toString();
         String sites = missionLogger.getSites().toString();
         logger.info("Creeks {}", creeks);
         logger.info("Sites {}", sites);
+
+        String creekMapAsString = map.getCreekCoordinatesAsString();
+        logger.info("CreekID: Position",creekMapAsString);
+        String siteMapAString = map.getCreekCoordinatesAsString();
+        logger.info("SiteID: Position", siteMapAString);
+        
         return "No final report";
     }
 
