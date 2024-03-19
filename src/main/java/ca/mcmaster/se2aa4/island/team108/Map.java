@@ -33,21 +33,23 @@ public class Map {
     public String getCreekCoordinatesAsString() {
     StringBuilder stringBuilder = new StringBuilder();
     stringBuilder.append("creek coordinates:\n");
-    for (String creekID : creekCoordinates.keySet()) {
-        Position position = creekCoordinates.get(creekID);
-        stringBuilder.append("CreekID: ").append(creekID).append(", Position: ").append(position.toString()).append("\n");
+    for (HashMap.Entry<String, Position> creek : creekCoordinates.entrySet()) {
+        String ID = creek.getKey();
+        Position position = creek.getValue();
+        stringBuilder.append("CreekID: ").append(ID).append(", Position: ").append(position).append("\n");
     }
     return stringBuilder.toString();
 }
 
     public String getSiteCoordinatesAsString() {
-    StringBuilder stringBuilder = new StringBuilder();
-    stringBuilder.append("site coordinates:\n");
-    for (String siteID : siteCoordinates.keySet()) {
-        Position position = siteCoordinates.get(siteID);
-        stringBuilder.append("siteID: ").append(siteID).append(", Position: ").append(position.toString()).append("\n");
-    }
-    return stringBuilder.toString();
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("creek coordinates:\n");
+        for (HashMap.Entry<String, Position> site : siteCoordinates.entrySet()) {
+            String ID = site.getKey();
+            Position position = site.getValue();
+            stringBuilder.append("SiteID: ").append(ID).append(", Position: ").append(position).append("\n");
+        }
+        return stringBuilder.toString();
 }
     
 

@@ -41,9 +41,9 @@ public class GridSearch {
         boolean containsWaterOnly = biomesArray != null && biomesArray.toList().contains("OCEAN") && biomesArray.toList().size() == 1;
         String prevAction = prev.getString("action");
         JSONArray creekArray = extraInfo.optJSONArray("creeks");
-        boolean containsCreek = creekArray != null && creekArray.length() > 0;
+        boolean containsCreek = creekArray != null && !creekArray.isEmpty();
         JSONArray siteArray = extraInfo.optJSONArray("sites");
-        boolean containsSite = creekArray != null && siteArray.length() > 0;
+        boolean containsSite = creekArray != null && !siteArray.isEmpty();
 
         logger.info("Current command Queue: " + commandQ.toString());
         if (!commandQ.isEmpty()){
@@ -52,23 +52,25 @@ public class GridSearch {
 
         try {
             if (Objects.equals(prevAction, "fly")) {
-
-                //f the drone scans and finds a site, add to the hashmap
+                // If the drone scans and finds a site, add to the hashmap
                 commandQ.add(droneCommand.droneScan());
+                
+            } else if (Objects.equals(prevAction, "scan")) {
                 if(containsSite){
+                    logger.info("Site found");
                     for (int i = 0; i < siteArray.length(); i++) {
                         String siteID = siteArray.getString(i);
                         map.addCreek(siteID, position);
-                }
-                }
-                else if(containsCreek){
+                    }
+                } else if(containsCreek){
+                    logger.info("Creek found");
                     for (int i = 0; i < creekArray.length(); i++) {
                         String creekID = creekArray.getString(i);
                         map.addCreek(creekID, position);
+                    }
                 }
-                }
-                
-            } else if (Objects.equals(prevAction, "scan")) {
+                logger.info("Map {}", map.getCreekCoordinatesAsString());
+
                 if (containsWaterOnly){
                     if ((isNextTurnLeft%2 == 0)) {
                         leftUTurn(heading);
@@ -80,6 +82,7 @@ public class GridSearch {
                     commandQ.add(droneCommand.dronefly());
                     map.updateDronePosition(heading);
                 }
+
             } else if (Objects.equals(prevAction, "heading")) {
                 //if scan is called, it checks where a site or creek exists and adds to hashmap
                 commandQ.add(droneCommand.droneScan());
