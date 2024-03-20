@@ -16,19 +16,14 @@ public class Explorer implements IExplorerRaid {
     private final DroneController droneController;
     private final MissionLogger missionLogger;
     private final Map map;
-    private final GridSearch gridSearch;
-    
     Direction heading;
     Energy batteryLevel;
 
     public Explorer() {
         // Instantiate DroneController
         this.map = new Map();
-        this.gridSearch = new GridSearch(map);
         this.droneController = new DroneController(map);
         this.missionLogger = new MissionLogger();
-       
-        
     }
 
     @Override
@@ -43,7 +38,6 @@ public class Explorer implements IExplorerRaid {
         logger.info("Battery level is {}", batteryLevel);
     }
 
-
     private JSONObject extraInfo = new JSONObject();
     JSONObject prevAction = new JSONObject();
     JSONObject prevPrevAction = new JSONObject();
@@ -54,6 +48,7 @@ public class Explorer implements IExplorerRaid {
         JSONObject nextAction = droneController.getNextMove(extraInfo, prevAction, heading);
         prevPrevAction = prevAction;
         prevAction = nextAction;
+
 
         JSONObject decision = new JSONObject();
 
@@ -118,8 +113,8 @@ public class Explorer implements IExplorerRaid {
         logger.info("CreekID: Position",creekMapAsString);
         String siteMapAString = map.getCreekCoordinatesAsString();
         logger.info("SiteID: Position", siteMapAString);
-        
-        return "No final report";
+        logger.info("-----");
+        return ("Creeks found: " + creekMapAsString + "\nSites found: " + siteMapAString);
     }
 
 }

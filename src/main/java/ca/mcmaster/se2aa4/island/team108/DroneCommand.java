@@ -9,6 +9,8 @@ import org.json.JSONObject;
  */
 
 public interface DroneCommand {
+    Position getPosition();
+    void setHeading(Direction heading);
     JSONObject dronefly() throws Exception;
     JSONObject droneScan() throws Exception;
     JSONObject droneEcho(Direction heading) throws IllegalStateException;

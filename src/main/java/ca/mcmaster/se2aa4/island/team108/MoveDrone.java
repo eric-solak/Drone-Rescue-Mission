@@ -1,27 +1,34 @@
 package ca.mcmaster.se2aa4.island.team108;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 
+import java.util.Arrays;
+
 public class MoveDrone implements DroneCommand {
-
-
-    private Position dronePosition = new Position(1, 1);
-
-    private Map islandMap;
-
-    public MoveDrone() {
-
-    }
+    private final Logger logger = LogManager.getLogger();
+    protected Map islandMap;
+    private Direction current_heading;
+    protected Position position;
 
     public MoveDrone(Map map) {
-         this.islandMap = map;
+        this.islandMap = map;
     }
-
+    @Override
+    public void setHeading(Direction heading) {
+        this.current_heading = heading;
+    }
+    public Position getPosition(){
+        return this.position;
+    }
     @Override
     public JSONObject dronefly() {
         JSONObject output = new JSONObject();
+        islandMap.updateDronePosition(current_heading);
+        position = islandMap.updateDronePosition(current_heading);
+        logger.info("Updated position: " + Arrays.toString(position.getCoords()));
         return output.put("action", "fly");
-        
 
     }
 
@@ -42,12 +49,14 @@ public class MoveDrone implements DroneCommand {
     }
 
     @Override
-    public JSONObject droneTurn(Direction heading) throws IllegalStateException {
+    public JSONObject droneTurn(Direction new_heading) throws IllegalStateException {
         JSONObject output = new JSONObject();
         output.put("action", "heading");
         JSONObject parameters = new JSONObject();
-        parameters.put("direction", heading);
+        parameters.put("direction", new_heading);
         output.put("parameters", parameters);
+        position = islandMap.updateDronePositionForTurning(current_heading, new_heading);
+        logger.info("Updated position: " + Arrays.toString(position.getCoords()));
         return output;
     }
 

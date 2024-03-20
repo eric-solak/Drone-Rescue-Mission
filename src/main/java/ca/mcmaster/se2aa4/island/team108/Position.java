@@ -14,4 +14,8 @@ public class Position {
     public Position getPosition() {
         return this;
     }
+    public int[] getCoords() {
+        return new int[]{x, y};
+    }
+
 }
