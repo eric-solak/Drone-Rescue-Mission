@@ -15,12 +15,14 @@ public class Explorer implements IExplorerRaid {
     private final Logger logger = LogManager.getLogger();
     private final DroneController droneController;
     private final MissionLogger missionLogger;
+    private final Map map;
     Direction heading;
     Energy batteryLevel;
 
     public Explorer() {
         // Instantiate DroneController
-        this.droneController = new DroneController();
+        this.map = new Map();
+        this.droneController = new DroneController(map);
         this.missionLogger = new MissionLogger();
     }
 
@@ -36,7 +38,6 @@ public class Explorer implements IExplorerRaid {
         logger.info("Battery level is {}", batteryLevel);
     }
 
-
     private JSONObject extraInfo = new JSONObject();
     JSONObject prevAction = new JSONObject();
     JSONObject prevPrevAction = new JSONObject();
@@ -47,6 +48,7 @@ public class Explorer implements IExplorerRaid {
         JSONObject nextAction = droneController.getNextMove(extraInfo, prevAction, heading);
         prevPrevAction = prevAction;
         prevAction = nextAction;
+
 
         JSONObject decision = new JSONObject();
 
@@ -100,12 +102,19 @@ public class Explorer implements IExplorerRaid {
 
     @Override
     public String deliverFinalReport() {
+
         logger.info("Final Report Reached");
         String creeks = missionLogger.getCreeks().toString();
         String sites = missionLogger.getSites().toString();
         logger.info("Creeks {}", creeks);
         logger.info("Sites {}", sites);
-        return "No final report";
+
+        String creekMapAsString = map.getCreekCoordinatesAsString();
+        logger.info("CreekID: Position",creekMapAsString);
+        String siteMapAString = map.getCreekCoordinatesAsString();
+        logger.info("SiteID: Position", siteMapAString);
+        logger.info("-----");
+        return ("Creeks found: " + creekMapAsString + "\nSites found: " + siteMapAString);
     }
 
 }

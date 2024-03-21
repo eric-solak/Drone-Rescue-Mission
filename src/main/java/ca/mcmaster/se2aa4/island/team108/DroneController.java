@@ -8,14 +8,18 @@ public class DroneController {
      private final Logger logger = LogManager.getLogger();
      private enum State {FindIsland, MoveToIsland, Creek, EmergencySite}
      private State currentState = State.FindIsland;
+     protected Map map;
+     protected Position position;
+     private DroneCommand droneCommand;
      private FindIsland findIsland;
-     private GridSearch gridSearch;
-     private PerimeterSearch perimeterSearch;
+     protected GridSearch gridSearch;
 
-     public DroneController(){
-          this.findIsland = new FindIsland();
+     public DroneController(Map map){
+          this.map = new Map();
+          this.droneCommand  = new MoveDrone(map);
+          this.position = new Position(0, 0);
+          this.findIsland = new FindIsland(map);
           this.gridSearch = new GridSearch();
-          this.perimeterSearch = new PerimeterSearch();
      }
 
      /**
@@ -28,13 +32,14 @@ public class DroneController {
       * @return JSONObject of the next move
       */
      public JSONObject getNextMove(JSONObject extraInfo, JSONObject prevAction, Direction heading) {
-          DroneCommand droneCommand = new MoveDrone();
           JSONObject move = new JSONObject();
-          
+          droneCommand.setHeading(heading);
+          position = droneCommand.getPosition();
+
           // Search for island
           if (currentState.equals(State.FindIsland)) {
                if (!extraInfo.has("found")) {
-                    move = findIsland.noLandDetected(prevAction, heading);
+                    move = findIsland.noLandDetected(prevAction, heading, droneCommand);
                } else {
                     if (extraInfo.getString("found").equals("GROUND")) { // Ground detected in ECHO command
                          JSONObject parameters = prevAction.getJSONObject("parameters");
@@ -48,7 +53,7 @@ public class DroneController {
                          }
                          currentState = State.MoveToIsland;
                     } else {
-                         move = findIsland.noLandDetected(prevAction, heading);
+                         move = findIsland.noLandDetected(prevAction, heading, droneCommand);
                     }
                }
           }
@@ -72,10 +77,9 @@ public class DroneController {
           }
           // Look for emergency site (Grid Search)
           else if (currentState.equals(State.EmergencySite)) {
-               logger.info("MOVING TO GRID SEARCH");
-               //move = droneCommand.droneStop();
-               move = gridSearch.nextMove(extraInfo, prevAction, heading);
+               move = gridSearch.nextMove(extraInfo, prevAction, heading, droneCommand, position, map);
           }
+
           return move;
      }
 

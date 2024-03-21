@@ -8,6 +8,11 @@ import java.util.Objects;
 
 public class FindIsland {
     private final Logger logger = LogManager.getLogger();
+    private DroneCommand droneCommand;
+
+    public FindIsland(Map map) {
+    }
+
 
     /**
      * Repeat "fly", "scan", and "echo" in both the left and right directions until land is found
@@ -15,9 +20,9 @@ public class FindIsland {
      * @param heading Current direction the drone is facing
      * @return JSONObject of the next move
      */
-    public JSONObject noLandDetected(JSONObject prev, Direction heading) {
-        DroneCommand droneCommand = new MoveDrone();
+    public JSONObject noLandDetected(JSONObject prev, Direction heading, DroneCommand droneCommand) {
         JSONObject output = new JSONObject();
+        this.droneCommand = droneCommand;
 
         try {
             if (prev.has("action")) {

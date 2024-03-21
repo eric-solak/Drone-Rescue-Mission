@@ -12,10 +12,13 @@ import java.util.Objects;
 public class GridSearch {
     private final Logger logger = LogManager.getLogger();
     private Queue<JSONObject> commandQ = new LinkedList<>();
-    private DroneCommand droneCommand = new MoveDrone();
+    private DroneCommand droneCommand;
     private boolean containsWater;
     private boolean completeUTurn;
     private int isNextTurnLeft = 0;
+    private Map map;
+    private Position position;
+
     /**
      * Calculates the next move during gridSearch
      * @param extraInfo JSONObject that contains the results of the previous action.
@@ -25,15 +28,20 @@ public class GridSearch {
      */
     // TODO: Implement Map. Map (or a class that uses Map) can tell GridSearch
     //  // which tiles have been searched, so GridSearch will know when it has to turnRight or turnLeft
-    
-    public JSONObject nextMove(JSONObject extraInfo, JSONObject prev, Direction heading) {
+
+    public JSONObject nextMove(JSONObject extraInfo, JSONObject prev, Direction heading, DroneCommand droneCommand, Position position,Map map) {
+
+        JSONObject output = new JSONObject();
+        this.droneCommand = droneCommand;
+        this.map = map;
+        this.position = position;
 
         // Dequeues and returns the next action from the queue
         logger.info("Current command Queue: " + commandQ.toString());
         if (!commandQ.isEmpty()){
             return commandQ.remove();
 
-        // If the queue is empty we get the next action
+            // If the queue is empty we get the next action
         } else{
             try {
                 getNextAction(extraInfo, prev, heading);
@@ -54,12 +62,32 @@ public class GridSearch {
 
         String prevAction = prev.getString("action");
         JSONArray biomeArray = extraInfo.optJSONArray("biomes");
+        JSONArray creekArray = extraInfo.optJSONArray("creeks");
+        boolean containsCreek = creekArray != null && !creekArray.isEmpty();
+        JSONArray siteArray = extraInfo.optJSONArray("sites");
+        boolean containsSite = creekArray != null && !siteArray.isEmpty();
 
         // The previous action dictates what the next action taken will be
         if (Objects.equals(prevAction, "fly")) {
             onFly();
+            
         } else if (Objects.equals(prevAction, "scan")) {
             containsWater = biomeArray != null && biomeArray.toList().contains("OCEAN");
+            if(containsSite){
+                logger.info("Site found");
+                for (int i = 0; i < siteArray.length(); i++) {
+                    String siteID = siteArray.getString(i);
+                    map.addSite(siteID, position.getCoords());
+                }
+            } else if(containsCreek){
+                logger.info("Creek found");
+                for (int i = 0; i < creekArray.length(); i++) {
+                    String creekID = creekArray.getString(i);
+                    map.addCreek(creekID, position.getCoords());
+                }
+            }
+            logger.info("Map {}", map.getCreekCoordinatesAsString());
+            logger.info("map {}", map.getSiteCoordinatesAsString());
             onScan(heading);
         } else if (Objects.equals(prevAction, "heading")) {
             onUTurn(heading, extraInfo);

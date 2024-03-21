@@ -1,108 +1,134 @@
 package ca.mcmaster.se2aa4.island.team108;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.Arrays;
 import java.util.HashMap;
-import java.io.File;
 
 public class Map {
 
-    private Position dronePosition = new Position(1, 1);
-    
-    private HashMap<String, Position> siteCoordinates;
+    private final Logger logger = LogManager.getLogger();
+    private Position position = new Position(0, 0);
 
-    
+    private HashMap<String, int[]> creekCoordinates;
+    private HashMap<String, int[]> siteCoordinates;
 
     public Map(){
-        siteCoordinates = new HashMap<>();
+        creekCoordinates = new HashMap<String, int[]>();
+        siteCoordinates = new HashMap<String, int[]>();
     }
 
-    public void addSite(String siteType, Position dronePosition){
-        
-        siteCoordinates.put(siteType, dronePosition); //i.e "creeks" : 5,5 example of what would be storied in hashmap
-        
+    public void addCreek(String creekID, int[] dronePosition){
+        logger.info("New creek added: " + Arrays.toString(dronePosition));
+        creekCoordinates.put(creekID, dronePosition); //i.e "creeks" : 5,5 example of what would be storied in hashmap
+
     }
 
-    //test function to see whats stored in hashmap
-    public void printSiteCoordinates() {
-        System.out.println("Site coordinates:");
-        for (String siteType : siteCoordinates.keySet()) {
-            Position position = siteCoordinates.get(siteType);
-            System.out.println("Site Type: " + siteType + ", Position: " + position.toString());
+    public void addSite(String siteID, int[] dronePosition){
+
+        siteCoordinates.put(siteID, dronePosition);
+    }
+
+    //below 2 function help to visualize hashmap. currently has bugs
+    public String getCreekCoordinatesAsString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("CreekCoordinates:\n");
+        for (java.util.Map.Entry<String, int[]> creek : creekCoordinates.entrySet()) {
+            String ID = creek.getKey();
+            int[] position = creek.getValue();
+            stringBuilder.append("CreekID: ").append(ID).append(", Position: ").append(Arrays.toString(position)).append("\n");
         }
+        return stringBuilder.toString();
     }
-    
 
-    public void updateDronePosition (Direction heading) {
+    public String getSiteCoordinatesAsString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("SiteCoordinates:\n");
+        for (java.util.Map.Entry<String, int[]> site : siteCoordinates.entrySet()) {
+            String ID = site.getKey();
+            int[] position = site.getValue();
+            stringBuilder.append("SiteID: ").append(ID).append(", Position: ").append(Arrays.toString(position)).append("\n");
+        }
+        return stringBuilder.toString();
+    }
+
+
+    public Position updateDronePosition (Direction heading) {
         switch (heading) {
             case N:
-                dronePosition.y--;
+                position.y++;
+                
                 break;
             case E:
-                dronePosition.x++;
+                position.x++;
+                
                 break;
             case S:
-                dronePosition.y++;
+                position.y--;
                 break;
             case W:
-                dronePosition.x--;
-                break;
-
-            
-            default:
+                position.x--;
                 break;
         }
+        return position;
     }
 
-    public void updateDronePositionForTurning (String turnDirection, Direction newDirection) {
-        switch (turnDirection) {
-            case "left":
-                switch (newDirection) {
-                    case N:
-                        dronePosition.y--;
-                        dronePosition.x--;
-                        break;
-                    case E:
-                        dronePosition.y--;
-                        dronePosition.x++;
-                        break;
-                    case S:
-                        dronePosition.y++;
-                        dronePosition.x++;
-                        break;
-                    case W:
-                        dronePosition.y++;
-                        dronePosition.x--;
-                        break;           
+    public Position updateDronePositionForTurning (Direction current_heading, Direction new_heading) {
+       switch (current_heading) {
+           case N:
+               switch (new_heading) {
+                   case E:
+                       position.y++;
+                       position.x++;
+                       break;
+                   case W:
+                       position.y++;
+                       position.x--;
+                       break;
+                default:
+                    break;
+               }
+           case S:
+               switch (new_heading) {
+                   case E:
+                       position.y--;
+                       position.x++;
+                       break;
+                   case W:
+                       position.y--;
+                       position.x--;
+                       break;
+                default:
+                    break;
+               }
+           case W:
+               switch (new_heading) {
+                   case N:
+                       position.y++;
+                       position.x--;
+                       break;
+                   case S:
+                       position.y--;
+                       position.x--;
+                       break;
                     default:
                         break;
-                }
-                break;
-            case "right":
-                switch (newDirection) {
-                    case N:
-                        dronePosition.y--;
-                        dronePosition.x++;
-                        break;
-                    case E:
-                        dronePosition.y++;
-                        dronePosition.x++;
-                        break;
-                    case S:
-                        dronePosition.y++;
-                        dronePosition.x--;
-                        break; 
-                    case W:
-                        dronePosition.y--;
-                        dronePosition.x--;
-                        break;          
+               }
+           case E:
+               switch (new_heading) {
+                   case N:
+                       position.y++;
+                       position.x++;
+                       break;
+                   case S:
+                       position.y--;
+                       position.x++;
+                       break;
                     default:
                         break;
-    
-        }
+               }
+       }
+        return position;
     }
-
-
-
-
-}}
+}
