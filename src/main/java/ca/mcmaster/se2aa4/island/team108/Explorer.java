@@ -16,6 +16,7 @@ public class Explorer implements IExplorerRaid {
     private final DroneController droneController;
     private final MissionLogger missionLogger;
     private final Map map;
+
     Direction heading;
     Energy batteryLevel;
 
@@ -24,6 +25,8 @@ public class Explorer implements IExplorerRaid {
         this.map = new Map();
         this.droneController = new DroneController(map);
         this.missionLogger = new MissionLogger();
+       
+        
     }
 
     @Override
@@ -115,6 +118,7 @@ public class Explorer implements IExplorerRaid {
         logger.info("SiteID: Position", siteMapAString);
         logger.info("-----");
         return ("Creeks found: " + creekMapAsString + "\nSites found: " + siteMapAString);
+
     }
 
 }

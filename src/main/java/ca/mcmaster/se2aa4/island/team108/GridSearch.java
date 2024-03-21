@@ -70,7 +70,6 @@ public class GridSearch {
         // The previous action dictates what the next action taken will be
         if (Objects.equals(prevAction, "fly")) {
             onFly();
-            
         } else if (Objects.equals(prevAction, "scan")) {
             containsWater = biomeArray != null && biomeArray.toList().contains("OCEAN");
             if(containsSite){
@@ -87,7 +86,6 @@ public class GridSearch {
                 }
             }
             logger.info("Map {}", map.getCreekCoordinatesAsString());
-            logger.info("map {}", map.getSiteCoordinatesAsString());
             onScan(heading);
         } else if (Objects.equals(prevAction, "heading")) {
             onUTurn(heading, extraInfo);
