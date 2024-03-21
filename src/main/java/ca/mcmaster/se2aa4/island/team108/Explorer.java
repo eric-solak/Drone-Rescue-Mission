@@ -16,7 +16,9 @@ public class Explorer implements IExplorerRaid {
     private final DroneController droneController;
     private final MissionLogger missionLogger;
     private final Map map;
+
     private final ClosestCreek closestCreek;
+
     Direction heading;
     Energy batteryLevel;
 
@@ -26,6 +28,7 @@ public class Explorer implements IExplorerRaid {
         this.droneController = new DroneController(map);
         this.missionLogger = new MissionLogger();
         this.closestCreek = new ClosestCreek();
+
     }
 
     @Override
@@ -113,8 +116,11 @@ public class Explorer implements IExplorerRaid {
         String nearestCreek = closestCreek.findClosestCreek(map.getSiteMap(), map.getCreekMap());
         logger.info("Closest creek ID {}", nearestCreek);
 
+
         
         return ("closest creek: " + nearestCreek);
+
+
     }
 
 }

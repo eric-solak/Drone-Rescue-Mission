@@ -65,7 +65,6 @@ public class DroneController {
                     boolean containsOcean = biomesArray.toList().contains("OCEAN");
                     int numBiomes = biomesArray.length();
                     if (!containsOcean || numBiomes > 1) {
-                         //move = perimeterSearch.nextMove(extraInfo, prevAction, heading);
                          currentState = State.EmergencySite;
                          move = findIsland.landDetected(prevAction);
                     } else {
