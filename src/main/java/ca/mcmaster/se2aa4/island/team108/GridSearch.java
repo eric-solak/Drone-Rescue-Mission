@@ -153,12 +153,40 @@ public class GridSearch {
             }
             // If we reach the edge of the island we do a uTurn
         } else {
+            int distance_to_edge = extraInfo.getInt("range");
             if ((isNextTurnLeft%2 == 0)) {
-                leftUTurn(heading);
+                if (distance_to_edge <=2){
+                    modifiedLeftUTurn(heading);
+                } else {
+                    leftUTurn(heading);
+                }
             } else {
-                rightUTurn(heading);
+                if (distance_to_edge <=2){
+                    modifiedRightUTurn(heading);
+                } else{
+                    rightUTurn(heading);
+                }
+
             }
             isNextTurnLeft += 1;
         }
+    }
+
+    private void modifiedRightUTurn(Direction heading) throws Exception {
+        commandQ.add(droneCommand.droneTurn(heading.turnRight()));
+        commandQ.add(droneCommand.dronefly());
+        commandQ.add(droneCommand.droneTurn(heading.turnRight().turnRight()));
+        commandQ.add(droneCommand.droneTurn(heading.turnRight().turnRight().turnRight()));
+        commandQ.add(droneCommand.droneTurn(heading.turnRight().turnRight()));
+        completeUTurn = true;
+    }
+
+    private void modifiedLeftUTurn(Direction heading) throws Exception {
+        commandQ.add(droneCommand.droneTurn(heading.turnLeft()));
+        commandQ.add(droneCommand.dronefly());
+        commandQ.add(droneCommand.droneTurn(heading.turnLeft().turnLeft()));
+        commandQ.add(droneCommand.droneTurn(heading.turnLeft().turnLeft().turnLeft()));
+        commandQ.add(droneCommand.droneTurn(heading.turnLeft().turnLeft()));
+        completeUTurn = true;
     }
 }
