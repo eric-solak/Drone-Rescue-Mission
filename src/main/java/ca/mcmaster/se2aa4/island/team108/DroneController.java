@@ -4,9 +4,11 @@ import org.json.JSONObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Objects;
+
 public class DroneController {
      private final Logger logger = LogManager.getLogger();
-     private enum State {FindIsland, MoveToIsland, Creek, EmergencySite}
+     private enum State {FindIsland, MoveToIsland, SearchIsland}
      private State currentState = State.FindIsland;
      protected Map map;
      protected Position position;
@@ -35,50 +37,36 @@ public class DroneController {
           JSONObject move = new JSONObject();
           droneCommand.setHeading(heading);
           position = droneCommand.getPosition();
-
-          // Search for island
-          if (currentState.equals(State.FindIsland)) {
-               if (!extraInfo.has("found")) {
-                    move = findIsland.noLandDetected(prevAction, heading, droneCommand);
-               } else {
-                    if (extraInfo.getString("found").equals("GROUND")) { // Ground detected in ECHO command
-                         JSONObject parameters = prevAction.getJSONObject("parameters");
-                         Direction echoDirection = (Direction) parameters.get("direction");
-
-                         JSONObject direction = new JSONObject();
-                         if (echoDirection == heading.turnLeft()) { // If the ECHO commands direction was left, turn left
-                              move = droneCommand.droneTurn(heading.turnLeft());
-                         } else { // If the ECHO commands direction was right, turn right
-                              move = droneCommand.droneTurn(heading.turnRight());
+          try {
+               if (currentState.equals(State.FindIsland)) {
+                    if (prevAction.has("action")) {
+                         String prev = prevAction.getString("action");
+                         if (Objects.equals(prev, "heading")) {
+                              currentState = State.MoveToIsland;
+                              move = droneCommand.droneEcho(heading);
+                         } else {
+                              move = findIsland.noLandDetected(prevAction, heading, droneCommand, extraInfo);
                          }
-                         currentState = State.MoveToIsland;
                     } else {
-                         move = findIsland.noLandDetected(prevAction, heading, droneCommand);
+                         move.put("action", "fly");
                     }
-               }
-          }
-
-          // Traverse to island
-          else if (currentState.equals(State.MoveToIsland)) {
-               if (extraInfo.has("biomes")) {
-                    JSONArray biomesArray = extraInfo.getJSONArray("biomes");
-                    boolean containsOcean = biomesArray.toList().contains("OCEAN");
-                    int numBiomes = biomesArray.length();
-                    if (!containsOcean || numBiomes > 1) {
-                         currentState = State.EmergencySite;
-                         move = findIsland.landDetected(prevAction);
+               } else if (currentState.equals(State.MoveToIsland)) {
+                    String prev = prevAction.getString("action");
+                    if (Objects.equals(prev, "scan")) {
+                         currentState = State.SearchIsland;
+                         move = droneCommand.dronefly();
+                         gridSearch.getFirstTurn(findIsland.getFirstTurnDirection());
                     } else {
-                         move = findIsland.landDetected(prevAction);
+                         move = findIsland.landDetected(prevAction, heading, droneCommand, extraInfo);
                     }
-               } else {
-                    move = findIsland.landDetected(prevAction);
+               } else if (currentState.equals(State.SearchIsland)) {
+                    move = gridSearch.nextMove(extraInfo, prevAction, heading, droneCommand, position, map);
                }
+          } catch (Exception e){
+               logger.error("Exception: " + e);
+               return droneCommand.droneStop();
           }
-          // Look for emergency site (Grid Search)
-          else if (currentState.equals(State.EmergencySite)) {
-               move = gridSearch.nextMove(extraInfo, prevAction, heading, droneCommand, position, map);
-          }
-
+          logger.info("Action sent to explorer: " + move.toString());
           return move;
      }
 

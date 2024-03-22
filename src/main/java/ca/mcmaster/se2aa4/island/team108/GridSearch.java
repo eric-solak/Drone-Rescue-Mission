@@ -128,6 +128,10 @@ public class GridSearch {
             commandQ.add(droneCommand.dronefly());
         }
     }
+
+    public void getFirstTurn(Integer value){
+        isNextTurnLeft += value;
+    }
     private void onEcho(JSONObject extraInfo, String prevAction, Direction heading) throws Exception{
         // If we echo forward after a uTurn and there is no land ahead we have finished scanning the island
         logger.info("Uturn boolean:" + completeUTurn);
