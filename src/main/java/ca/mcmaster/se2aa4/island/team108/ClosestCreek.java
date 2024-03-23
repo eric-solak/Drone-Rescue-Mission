@@ -15,29 +15,27 @@ import javax.rmi.ssl.SslRMIClientSocketFactory;
 
 public class ClosestCreek {
     
-    public String findClosestCreek(HashMap<String, int[]> emergencySiteMap, HashMap<String, int[]> creekMap ){
-        int[] siteCoordinates = null;
-        double minDistance = Double.MAX_VALUE;
-        String closestCreekID = "";
+    public String findClosestCreek(HashMap<String, int[]> emergencySiteMap, HashMap<String, int[]> creekMap) {
+    double minDistance = Double.MAX_VALUE;
+    String closestCreekID = "";
 
-        for(Entry<String, int[]> entry: emergencySiteMap.entrySet()){
-            siteCoordinates = entry.getValue();
-        }
-        for(Entry<String, int[]> entry : creekMap.entrySet()){
-            String creekID = entry.getKey();
-            int[] creekCoordinates = entry.getValue();
+    for (Entry<String, int[]> siteEntry : emergencySiteMap.entrySet()) {
+        int[] siteCoordinates = siteEntry.getValue();
+
+        for (Entry<String, int[]> creekEntry : creekMap.entrySet()) {
+            String creekID = creekEntry.getKey();
+            int[] creekCoordinates = creekEntry.getValue();
 
             double distance = calculateDistance(siteCoordinates, creekCoordinates);
 
-            if(distance < minDistance){
+            if (distance < minDistance) {
                 minDistance = distance;
                 closestCreekID = creekID;
-
             }
-
         }
-        return closestCreekID;
     }
+    return closestCreekID;
+}
 
     private double calculateDistance(int[] siteCoordinates, int[] creekCoordinates){
         int distX = creekCoordinates[0] - siteCoordinates[0];
