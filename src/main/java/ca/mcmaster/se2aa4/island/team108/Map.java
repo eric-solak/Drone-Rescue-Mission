@@ -11,8 +11,8 @@ public class Map {
     private final Logger logger = LogManager.getLogger();
     private Position position = new Position(0, 0);
 
-    private HashMap<String, int[]> creekMap;
-    private HashMap<String, int[]> siteMap;
+    public HashMap<String, int[]> creekMap;
+    public HashMap<String, int[]> siteMap;
 
     public Map(){
         creekMap = new HashMap<String, int[]>();
@@ -26,17 +26,12 @@ public class Map {
     }
 
     public void addSite(String siteID, int[] dronePosition){
-
+        logger.info("site added");
         siteMap.put(siteID, dronePosition);
     }
+    
 
-    public HashMap<String, int[]> getCreekMap() {
-        return creekMap;
-    }
-
-    public HashMap<String, int[]> getSiteMap() {
-        return siteMap;
-    }
+    
     //below 2 function help to visualize hashmap. currently has bugs
     public String getCreekCoordinatesAsString() {
         StringBuilder stringBuilder = new StringBuilder();

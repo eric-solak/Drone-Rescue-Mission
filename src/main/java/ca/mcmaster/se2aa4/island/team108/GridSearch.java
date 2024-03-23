@@ -16,8 +16,9 @@ public class GridSearch {
     private boolean containsWater;
     private boolean completeUTurn;
     private int isNextTurnLeft = 0;
-    private Map map;
     private Position position;
+    private Map map;
+    public ClosestCreek closestCreek;
 
     /**
      * Calculates the next move during gridSearch
@@ -35,6 +36,7 @@ public class GridSearch {
         this.droneCommand = droneCommand;
         this.map = map;
         this.position = position;
+        this.closestCreek = new ClosestCreek(map.siteMap, map.creekMap);
 
         // Dequeues and returns the next action from the queue
         logger.info("Current command Queue: " + commandQ.toString());
@@ -85,7 +87,10 @@ public class GridSearch {
                     map.addCreek(creekID, position.getCoords());
                 }
             }
-            logger.info("Map {}", map.getCreekCoordinatesAsString());
+            logger.info("Creek Map: {}", map.getCreekCoordinatesAsString());
+            logger.info("Site Map: {}", map.getSiteCoordinatesAsString());
+            logger.info("Closest Creek ID: {}", closestCreek.findClosestCreek());
+
             onScan(heading);
         } else if (Objects.equals(prevAction, "heading")) {
             onUTurn(heading, extraInfo);

@@ -15,9 +15,10 @@ public class Explorer implements IExplorerRaid {
     private final Logger logger = LogManager.getLogger();
     private final DroneController droneController;
     private final MissionLogger missionLogger;
-    private final Map map;
+    private Map map;
 
-    private final ClosestCreek closestCreek;
+    private ClosestCreek closestCreek;
+    
 
     Direction heading;
     Energy batteryLevel;
@@ -27,7 +28,7 @@ public class Explorer implements IExplorerRaid {
         this.map = new Map();
         this.droneController = new DroneController(map);
         this.missionLogger = new MissionLogger();
-        this.closestCreek = new ClosestCreek();
+        //
 
     }
 
@@ -107,18 +108,20 @@ public class Explorer implements IExplorerRaid {
 
     @Override
     public String deliverFinalReport() {
-
+        
+   
+        this.closestCreek = new ClosestCreek(map.siteMap, map.creekMap);
         logger.info("Final Report Reached");
         String creeks = missionLogger.getCreeks().toString();
         String sites = missionLogger.getSites().toString();
         logger.info("Creeks {}", creeks);
         logger.info("Sites {}", sites);
-        String nearestCreek = closestCreek.findClosestCreek(map.getSiteMap(), map.getCreekMap());
-        logger.info("Closest creek ID {}", nearestCreek);
+        String closestCreekID = closestCreek.findClosestCreek();
+        logger.info("Closest Creek ID: {}", closestCreek.findClosestCreek());
 
 
         
-        return ("closest creek: " + nearestCreek);
+        return closestCreekID;
 
 
     }
