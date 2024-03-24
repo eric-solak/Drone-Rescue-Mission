@@ -12,8 +12,7 @@ public class FindIsland {
     private final Logger logger = LogManager.getLogger();
     private DroneCommand droneCommand;
     private String prev;
-    private enum State {NotFound, CheckEcho, Perpendicular, MoveToIsland};
-    private State currentState = State.NotFound;
+    private FindIslandState currentState = FindIslandState.NotFound;
     private int FirstTurnDirection = 0;
     private Queue<JSONObject> commandQ = new LinkedList<>();
     public FindIsland(Map map) {
@@ -28,11 +27,11 @@ public class FindIsland {
      */
     public JSONObject noLandDetected(JSONObject prevAction, Direction heading, DroneCommand droneCommand, JSONObject extraInfo) throws Exception {
         this.droneCommand = droneCommand;
-
         getPrevAction(prevAction);
-        if (currentState == State.NotFound  && commandQ.isEmpty()) {
+        logger.info("Current State: " + currentState.toString());
+        if (Objects.equals(currentState,FindIslandState.NotFound)  && commandQ.isEmpty()) {
             flyForward(heading, extraInfo, prevAction);
-        } else if (currentState == State.CheckEcho) {
+        } else if (Objects.equals(currentState,FindIslandState.CheckEcho)) {
             checkingEcho(heading, extraInfo, prevAction);
         }
         logger.info("Command Queue: " + commandQ.toString());
@@ -43,11 +42,11 @@ public class FindIsland {
         this.droneCommand = droneCommand;
         getPrevAction(prevAction);
         
-        if (currentState == State.Perpendicular){
+        if (currentState == FindIslandState.Perpendicular){
             if (commandQ.isEmpty()){
                 findEdge(heading, extraInfo, prevAction);
             }
-        } else if (currentState == State.MoveToIsland) {
+        } else if (currentState == FindIslandState.MoveToIsland) {
             flyToLand(heading, extraInfo, prevAction);
         }
         logger.info("Command Queue: " + commandQ.toString());
@@ -88,7 +87,7 @@ public class FindIsland {
             commandQ.add(droneCommand.droneTurn(heading.turnLeft().turnLeft()));
             commandQ.add(droneCommand.droneTurn(heading.turnLeft().turnLeft().turnRight()));
             commandQ.add(droneCommand.droneEcho(heading.turnLeft()));
-            currentState = State.MoveToIsland;
+            currentState = FindIslandState.MoveToIsland;
         }
 
     }
@@ -100,21 +99,21 @@ public class FindIsland {
                 Direction echoDirection = (Direction) parameters.get("direction");
                 commandQ.clear();
                 if (echoDirection == heading.turnLeft()) {
-                    currentState = State.MoveToIsland;
+                    currentState = FindIslandState.MoveToIsland;
                     commandQ.add(droneCommand.droneTurn(heading.turnLeft()));
                     setFirstTurn();
                 } else if (echoDirection == heading.turnRight()) {
-                    currentState = State.MoveToIsland;
+                    currentState = FindIslandState.MoveToIsland;
                     commandQ.add(droneCommand.droneTurn(heading.turnRight()));
                 } else {
-                    currentState = State.Perpendicular;
+                    currentState = FindIslandState.Perpendicular;
                     commandQ.add(droneCommand.droneTurn(heading.turnRight()));
                     commandQ.add(droneCommand.droneEcho(heading));
                 }
             // If we have checked all directions and there is no ground we move forward
             } else if (extraInfo.getString("found").equals("OUT_OF_RANGE") && commandQ.isEmpty()) {
                 commandQ.add(droneCommand.dronefly());
-                currentState = State.NotFound;
+                currentState = FindIslandState.NotFound;
             }
         }
     }
@@ -149,6 +148,10 @@ public class FindIsland {
         return droneCommand.droneStop();
     }
 
+    public void setCurrentState(FindIslandState newState){
+        this.currentState = newState;
+    }
+
     private void flyForward(Direction heading, JSONObject extraInfo, JSONObject prevAction) throws Exception{
 
         // Echo in all directions
@@ -156,7 +159,7 @@ public class FindIsland {
             commandQ.add(droneCommand.droneEcho(heading));
             commandQ.add(droneCommand.droneEcho(heading.turnRight()));
             commandQ.add(droneCommand.droneEcho(heading.turnLeft()));
-            currentState = State.CheckEcho;
+            currentState = FindIslandState.CheckEcho;
         }
 
     }
