@@ -60,6 +60,10 @@ public class Explorer implements IExplorerRaid {
         } else {
             decision.put("action", "stop");
         }
+        if (batteryLevel.currentEnergy() < 40){
+            logger.info("Low Battery, Returning to Base");
+            decision.put("action", "stop");
+        }
 
         if (nextAction.has("parameters")) {
             // Retrieve the value of "parameters" key
