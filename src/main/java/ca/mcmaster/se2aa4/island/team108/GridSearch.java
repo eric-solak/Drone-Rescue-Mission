@@ -11,13 +11,13 @@ import java.util.Objects;
 
 public class GridSearch {
     private final Logger logger = LogManager.getLogger();
-    private Queue<JSONObject> commandQ = new LinkedList<>();
+    private final Queue<JSONObject> commandQ = new LinkedList<>();
     private DroneCommand droneCommand;
     private boolean containsWater;
     private boolean completeUTurn;
     private int isNextTurnLeft = 0;
     private Position position;
-    private Map map;
+    private AreaMap map;
     private ClosestCreek closestCreek;
 
     /**
@@ -30,16 +30,14 @@ public class GridSearch {
     // TODO: Implement Map. Map (or a class that uses Map) can tell GridSearch
     //  // which tiles have been searched, so GridSearch will know when it has to turnRight or turnLeft
 
-    public JSONObject nextMove(JSONObject extraInfo, JSONObject prev, Direction heading, DroneCommand droneCommand, Position position,Map map) {
-
-        JSONObject output = new JSONObject();
+    public JSONObject nextMove(JSONObject extraInfo, JSONObject prev, Direction heading, DroneCommand droneCommand, Position position, AreaMap map) {
         this.droneCommand = droneCommand;
         this.map = map;
         this.position = position;
         this.closestCreek = new ClosestCreek(map.siteMap, map.creekMap);
 
         // Dequeues and returns the next action from the queue
-        logger.info("Current command Queue: " + commandQ.toString());
+        logger.info("Current command Queue: " + commandQ);
         if (!commandQ.isEmpty()){
             return commandQ.remove();
 
@@ -53,15 +51,10 @@ public class GridSearch {
             }
         }
 
-        if (!commandQ.isEmpty()) {
-            logger.info("Next command in grid search:" + commandQ.peek().toString());
-        }
-
         return commandQ.remove();
     }
     public String printClosestCreekID(){
-        String closestCreekID = closestCreek.findClosestCreek();
-        return closestCreekID;
+        return closestCreek.findClosestCreek();
     }
 
     private void getNextAction(JSONObject extraInfo, JSONObject prev, Direction heading) throws Exception {
@@ -100,15 +93,15 @@ public class GridSearch {
         } else if (Objects.equals(prevAction, "heading")) {
             onUTurn(heading);
         } else if (Objects.equals(prevAction, "echo")) {
-            onEcho(extraInfo, prevAction, heading);
+            onEcho(extraInfo, heading);
         }
     }
     private void onFly() throws Exception {
         commandQ.add(droneCommand.droneScan());
     }
 
-    private void onUTurn(Direction heading) throws Exception {
-        commandQ.add((droneCommand.droneEcho(heading)));
+    private void onUTurn(Direction heading) {
+        commandQ.add(droneCommand.droneEcho(heading));
     }
 
     private void leftUTurn(Direction heading) throws Exception {
@@ -142,23 +135,22 @@ public class GridSearch {
     public void getFirstTurn(Integer value){
         isNextTurnLeft += value;
     }
-    private void onEcho(JSONObject extraInfo, String prevAction, Direction heading) throws Exception{
+    private void onEcho(JSONObject extraInfo, Direction heading) throws Exception{
         // If we echo forward after a uTurn and there is no land ahead we have finished scanning the island
-        //logger.info("Uturn boolean:" + completeUTurn);
-        if (completeUTurn && extraInfo.getString("found").equals("OUT_OF_RANGE")){
+        if (completeUTurn && "OUT_OF_RANGE".equals(extraInfo.getString("found"))){
             commandQ.add(droneCommand.droneStop());
             return;
         } else if (completeUTurn){
             completeUTurn = false;
         }
         // If we echo and there is land we fly to it and scan
-        if (extraInfo.getString("found").equals("GROUND")) {
-            int distance_to_shore = extraInfo.getInt("range");
-            if (distance_to_shore == 0){
+        if ("GROUND".equals(extraInfo.getString("found"))) {
+            int distanceToShore = extraInfo.getInt("range");
+            if (distanceToShore == 0){
                 commandQ.add(droneCommand.droneScan());
                 commandQ.add(droneCommand.dronefly());
             } else {
-                for (int i = 0; i < distance_to_shore; i++) {
+                for (int i = 0; i < distanceToShore; i++) {
                     commandQ.add(droneCommand.dronefly());
                 }
                 commandQ.add(droneCommand.droneScan());
@@ -167,15 +159,15 @@ public class GridSearch {
             }
             // If we reach the edge of the island we do a uTurn
         } else {
-            int distance_to_edge = extraInfo.getInt("range");
-            if ((isNextTurnLeft%2 == 0)) {
-                if (distance_to_edge <=2){
+            int distanceToEdge = extraInfo.getInt("range");
+            if (isNextTurnLeft%2 == 0) {
+                if (distanceToEdge <=2){
                     modifiedLeftUTurn(heading);
                 } else {
                     leftUTurn(heading);
                 }
             } else {
-                if (distance_to_edge <=2){
+                if (distanceToEdge <=2){
                     modifiedRightUTurn(heading);
                 } else{
                     rightUTurn(heading);

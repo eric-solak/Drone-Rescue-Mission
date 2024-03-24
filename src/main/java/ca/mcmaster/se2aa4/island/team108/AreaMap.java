@@ -5,21 +5,21 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Arrays;
 import java.util.HashMap;
-
-public class Map {
+import java.util.Map;
+public class AreaMap {
 
     private final Logger logger = LogManager.getLogger();
     Position position = new Position(0, 0);
 
 
-    public HashMap<String, int[]> creekMap;
-    public HashMap<String, int[]> siteMap;
+    public Map<String, int[]> creekMap;
+    public Map<String, int[]> siteMap;
 
     
 
-    public Map(){
-        creekMap = new HashMap<String, int[]>();
-        siteMap = new HashMap<String, int[]>();
+    public AreaMap() {
+        creekMap = new HashMap<>();
+        siteMap = new HashMap<>();
     }
 
     public void addCreek(String creekID, int[] dronePosition){
@@ -40,9 +40,9 @@ public class Map {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("CreekCoordinates:\n");
         for (java.util.Map.Entry<String, int[]> creek : creekMap.entrySet()) {
-            String ID = creek.getKey();
+            String creekID = creek.getKey();
             int[] position = creek.getValue();
-            stringBuilder.append("CreekID: ").append(ID).append(", Position: ").append(Arrays.toString(position)).append("\n");
+            stringBuilder.append("CreekID: ").append(creekID).append(", Position: ").append(Arrays.toString(position)).append("\n");
         }
         return stringBuilder.toString();
     }
@@ -51,9 +51,9 @@ public class Map {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("SiteCoordinates:\n");
         for (java.util.Map.Entry<String, int[]> site : siteMap.entrySet()) {
-            String ID = site.getKey();
+            String siteID = site.getKey();
             int[] position = site.getValue();
-            stringBuilder.append("SiteID: ").append(ID).append(", Position: ").append(Arrays.toString(position)).append("\n");
+            stringBuilder.append("SiteID: ").append(siteID).append(", Position: ").append(Arrays.toString(position)).append("\n");
         }
         return stringBuilder.toString();
     }
@@ -75,14 +75,16 @@ public class Map {
             case W:
                 position.x--;
                 break;
+            default:
+                break;
         }
         return position;
     }
 
-    public Position updateDronePositionForTurning (Direction current_heading, Direction new_heading) {
-       switch (current_heading) {
+    public Position updateDronePositionForTurning (Direction currentHeading, Direction newHeading) {
+       switch (currentHeading) {
            case N:
-               switch (new_heading) {
+               switch (newHeading) {
                    case E:
                        position.y++;
                        position.x++;
@@ -96,7 +98,7 @@ public class Map {
                }
                break;
            case S:
-               switch (new_heading) {
+               switch (newHeading) {
                    case E:
                        position.y--;
                        position.x++;
@@ -110,7 +112,7 @@ public class Map {
                }
                break;
            case W:
-               switch (new_heading) {
+               switch (newHeading) {
                    case N:
                        position.y++;
                        position.x--;
@@ -124,7 +126,7 @@ public class Map {
                }
                break;
            case E:
-               switch (new_heading) {
+               switch (newHeading) {
                    case N:
                        position.y++;
                        position.x++;
@@ -136,6 +138,8 @@ public class Map {
                     default:
                         break;
                }
+               break;
+           default:
                break;
        }
         return position;

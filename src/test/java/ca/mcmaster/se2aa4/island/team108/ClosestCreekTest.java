@@ -6,18 +6,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class ClosetCreekTest {
+public class ClosestCreekTest {
     private ClosestCreek closestCreek;
-    private Map<String, int[]> emergencySiteMap;
-    private Map<String, int[]> creekMap;
 
     @BeforeEach
     void setUp() {
-        emergencySiteMap = new HashMap<>();
+        Map<String, int[]> emergencySiteMap = new HashMap<>();
         emergencySiteMap.put("siteA", new int[]{10, 15});
 
-        creekMap = new HashMap<>();
+        Map<String, int[]> creekMap = new HashMap<>();
         creekMap.put("creekA", new int[]{10, 16});
         creekMap.put("creeB", new int[]{434, 43});
 
@@ -39,7 +38,7 @@ public class ClosetCreekTest {
         Map<String, int[]> creekMap = new HashMap<>();
         ClosestCreek closestCreek = new ClosestCreek(emergencySiteMap, creekMap);
 
-        assertEquals(null, closestCreek.findClosestCreek());
+        assertNull(closestCreek.findClosestCreek());
     }
 
     @Test
@@ -62,11 +61,9 @@ public class ClosetCreekTest {
         Map<String, int[]> emergencySiteMap = new HashMap<>();
         emergencySiteMap.put("siteA", new int[]{0, 0});
         Map<String, int[]> creekMap = new HashMap<>();
-        // creekMap.put("creekA", new int[]{0, 2});
-        // creekMap.put("creekB", new int[]{0, 1});
         ClosestCreek closestCreek = new ClosestCreek(emergencySiteMap, creekMap);
 
 
-        assertEquals(null, closestCreek.findClosestCreek());
+        assertNull(closestCreek.findClosestCreek());
     }
 }

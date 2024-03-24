@@ -1,7 +1,6 @@
 package ca.mcmaster.se2aa4.island.team108;
 
 import java.io.StringReader;
-import java.util.Objects;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,21 +14,15 @@ public class Explorer implements IExplorerRaid {
     private final Logger logger = LogManager.getLogger();
     private final DroneController droneController;
     private final MissionLogger missionLogger;
-    private Map map;
+    private final AreaMap map;
 
-    private ClosestCreek closestCreek;
-    
 
     Direction heading;
     Energy batteryLevel;
-    private MoveDrone droneCommand;
-    private Position position;
 
     public Explorer() {
         // Instantiate DroneController
-        this.map = new Map();
-        this.droneCommand  = new MoveDrone(map);
-        this.position = new Position(0, 0);
+        this.map = new AreaMap();
         this.droneController = new DroneController(map);
         this.missionLogger = new MissionLogger();
         //
@@ -77,7 +70,7 @@ public class Explorer implements IExplorerRaid {
 
             // Update the direction if drone turned left or right
             String action = decision.getString("action");
-            if (parameters.has("direction") && action.equals("heading")) {
+            if ("heading".equals(action) && parameters.has("direction")) {
                 heading = (Direction) parameters.get("direction");
                 logger.info("Direction changed to: " + heading);
             }
@@ -112,9 +105,9 @@ public class Explorer implements IExplorerRaid {
 
     @Override
     public String deliverFinalReport() {
-        
-   
-        this.closestCreek = new ClosestCreek(map.siteMap, map.creekMap);
+
+
+        ClosestCreek closestCreek = new ClosestCreek(map.siteMap, map.creekMap);
         logger.info("Final Report Reached");
         String creeks = missionLogger.getCreeks().toString();
         String sites = missionLogger.getSites().toString();

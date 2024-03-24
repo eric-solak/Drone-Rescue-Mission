@@ -38,7 +38,6 @@ public class ClosestCreek {
     private double calculateDistance(int[] siteCoordinates, int[] creekCoordinates){
         int distX = creekCoordinates[0] - siteCoordinates[0];
         int distY = creekCoordinates[1] - siteCoordinates[1];
-        double hypotenuse = Math.hypot(distX, distY);
-        return hypotenuse;
+        return Math.hypot(distX, distY);
     } 
 }

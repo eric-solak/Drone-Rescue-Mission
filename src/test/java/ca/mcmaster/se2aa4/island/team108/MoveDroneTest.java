@@ -8,13 +8,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class MoveDroneTest {
     private MoveDrone droneCommand;
-    private Map map;
     private Direction direction;
 
 
     @BeforeEach
     public void initialize() {
-        map = new Map();
+        AreaMap map = new AreaMap();
         droneCommand = new MoveDrone(map);
         direction = Direction.E;
     }
@@ -27,7 +26,7 @@ class MoveDroneTest {
     }
 
     @Test
-    void onScanRequest() throws Exception {
+    void onScanRequest() {
         droneCommand.setHeading(Direction.E);
         JSONObject action = droneCommand.droneScan();
         assertEquals(action.toString(), "{\"action\":\"scan\"}");

@@ -11,9 +11,6 @@ public class Position {
         this.y = y;
     }
 
-    public Position getPosition() {
-        return this;
-    }
 
     public int[] getCoords() {
         return new int[]{x, y};
