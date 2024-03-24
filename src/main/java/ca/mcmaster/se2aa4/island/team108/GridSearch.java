@@ -73,28 +73,7 @@ public class GridSearch {
             onFly();
         } else if (Objects.equals(prevAction, "scan")) {
             JSONArray biomeArray = extraInfo.optJSONArray("biomes");
-            JSONArray creekArray = extraInfo.optJSONArray("creeks");
-            boolean containsCreek = creekArray != null && !creekArray.isEmpty();
-            JSONArray siteArray = extraInfo.optJSONArray("sites");
-            boolean containsSite = creekArray != null && !siteArray.isEmpty();
             containsWater = biomeArray != null && biomeArray.toList().contains("OCEAN");
-            if(containsSite){
-                logger.info("Site found");
-                for (int i = 0; i < siteArray.length(); i++) {
-                    String siteID = siteArray.getString(i);
-                    map.addSite(siteID, position.getCoords());
-                }
-            } else if(containsCreek){
-                logger.info("Creek found");
-                for (int i = 0; i < creekArray.length(); i++) {
-                    String creekID = creekArray.getString(i);
-                    map.addCreek(creekID, position.getCoords());
-                }
-            }
-            logger.info("Creek Map: {}", map.getCreekCoordinatesAsString());
-            logger.info("Site Map: {}", map.getSiteCoordinatesAsString());
-            logger.info("The closest creek found is: {}", printClosestCreekID());
-            
 
             onScan(heading);
         } else if (Objects.equals(prevAction, "heading")) {
