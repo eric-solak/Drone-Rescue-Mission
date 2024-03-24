@@ -12,7 +12,8 @@ public class ClosestCreekTest {
     private ClosestCreek closestCreek;
 
     @BeforeEach
-    void setUp() {
+
+    void startPoint() {
         Map<String, int[]> emergencySiteMap = new HashMap<>();
         emergencySiteMap.put("siteA", new int[]{10, 15});
 

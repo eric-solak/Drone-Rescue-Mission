@@ -9,8 +9,11 @@ public class MapTest {
     private AreaMap map;
 
     @BeforeEach
-    void setUp() {
+
+    void startPoint() {
         map = new AreaMap();
+
+
         map.position = new Position(0, 0);
     }
 
