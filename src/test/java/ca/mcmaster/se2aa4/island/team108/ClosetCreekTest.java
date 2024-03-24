@@ -13,7 +13,7 @@ public class ClosetCreekTest {
     private Map<String, int[]> creekMap;
 
     @BeforeEach
-    void setUp() {
+    void startPoint() {
         emergencySiteMap = new HashMap<>();
         emergencySiteMap.put("siteA", new int[]{10, 15});
 

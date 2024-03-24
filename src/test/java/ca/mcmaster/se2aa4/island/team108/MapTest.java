@@ -11,7 +11,7 @@ public class MapTest {
     private Map map;
 
     @BeforeEach
-    void setUp() {
+    void startPoint() {
         map = new Map();
         map.position = new Position(0, 0);
     }
