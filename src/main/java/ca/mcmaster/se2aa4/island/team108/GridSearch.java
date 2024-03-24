@@ -48,7 +48,7 @@ public class GridSearch {
             try {
                 getNextAction(extraInfo, prev, heading);
             } catch (Exception e){
-                logger.info("Grid Search Error: " + e);
+                logger.error("Grid Search Error: " + e.getMessage());
                 commandQ.add(droneCommand.droneStop());
             }
         }
@@ -67,16 +67,16 @@ public class GridSearch {
     private void getNextAction(JSONObject extraInfo, JSONObject prev, Direction heading) throws Exception {
 
         String prevAction = prev.getString("action");
-        JSONArray biomeArray = extraInfo.optJSONArray("biomes");
-        JSONArray creekArray = extraInfo.optJSONArray("creeks");
-        boolean containsCreek = creekArray != null && !creekArray.isEmpty();
-        JSONArray siteArray = extraInfo.optJSONArray("sites");
-        boolean containsSite = creekArray != null && !siteArray.isEmpty();
 
         // The previous action dictates what the next action taken will be
         if (Objects.equals(prevAction, "fly")) {
             onFly();
         } else if (Objects.equals(prevAction, "scan")) {
+            JSONArray biomeArray = extraInfo.optJSONArray("biomes");
+            JSONArray creekArray = extraInfo.optJSONArray("creeks");
+            boolean containsCreek = creekArray != null && !creekArray.isEmpty();
+            JSONArray siteArray = extraInfo.optJSONArray("sites");
+            boolean containsSite = creekArray != null && !siteArray.isEmpty();
             containsWater = biomeArray != null && biomeArray.toList().contains("OCEAN");
             if(containsSite){
                 logger.info("Site found");
@@ -98,7 +98,7 @@ public class GridSearch {
 
             onScan(heading);
         } else if (Objects.equals(prevAction, "heading")) {
-            onUTurn(heading, extraInfo);
+            onUTurn(heading);
         } else if (Objects.equals(prevAction, "echo")) {
             onEcho(extraInfo, prevAction, heading);
         }
@@ -107,7 +107,7 @@ public class GridSearch {
         commandQ.add(droneCommand.droneScan());
     }
 
-    private void onUTurn(Direction heading, JSONObject extraInfo) throws Exception {
+    private void onUTurn(Direction heading) throws Exception {
         commandQ.add((droneCommand.droneEcho(heading)));
     }
 
@@ -144,7 +144,7 @@ public class GridSearch {
     }
     private void onEcho(JSONObject extraInfo, String prevAction, Direction heading) throws Exception{
         // If we echo forward after a uTurn and there is no land ahead we have finished scanning the island
-        logger.info("Uturn boolean:" + completeUTurn);
+        //logger.info("Uturn boolean:" + completeUTurn);
         if (completeUTurn && extraInfo.getString("found").equals("OUT_OF_RANGE")){
             commandQ.add(droneCommand.droneStop());
             return;
