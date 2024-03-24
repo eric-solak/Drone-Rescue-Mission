@@ -37,11 +37,11 @@ public class DroneController {
           droneCommand.setHeading(heading);
           position = droneCommand.getPosition();
           try {
-               if (currentState.equals(droneControllerState.FindIsland)) {
+               if (currentState.equals(State.FindIsland)) {
                     if (prevAction.has("action")) {
                          String prev = prevAction.getString("action");
                          if (Objects.equals(prev, "heading")) {
-                              currentState = droneControllerState.MoveToIsland;
+                              currentState = State.MoveToIsland;
                               move = droneCommand.droneEcho(heading);
                          } else {
                               move = findIsland.noLandDetected(prevAction, heading, droneCommand, extraInfo);
@@ -49,16 +49,16 @@ public class DroneController {
                     } else {
                          move.put("action", "fly");
                     }
-               } else if (currentState.equals(droneControllerState.MoveToIsland)) {
+               } else if (currentState.equals(State.MoveToIsland)) {
                     String prev = prevAction.getString("action");
                     if (Objects.equals(prev, "scan")) {
-                         currentState = droneControllerState.SearchIsland;
+                         currentState = State.SearchIsland;
                          move = droneCommand.dronefly();
                          gridSearch.getFirstTurn(findIsland.getFirstTurnDirection());
                     } else {
                          move = findIsland.landDetected(prevAction, heading, droneCommand, extraInfo);
                     }
-               } else if (currentState.equals(droneControllerState.SearchIsland)) {
+               } else if (currentState.equals(State.SearchIsland)) {
                     move = gridSearch.nextMove(extraInfo, prevAction, heading, droneCommand, position, map);
                     logger.info("Reaching Site Check");
                     if (prevAction.has("action")){
