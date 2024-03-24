@@ -1,8 +1,12 @@
 package ca.mcmaster.se2aa4.island.team108;
 
+/**
+ * Position keeps track of the current position of the drone
+ * i.e. its coordinates
+ */
 public class Position {
 
-    //implement position tracking
+
     public int x;
     public int y;
 
@@ -11,9 +15,6 @@ public class Position {
         this.y = y;
     }
 
-    public Position getPosition() {
-        return this;
-    }
 
     public int[] getCoords() {
         return new int[]{x, y};

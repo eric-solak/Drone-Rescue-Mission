@@ -14,15 +14,15 @@ public class FindIsland {
     private String prev;
     private FindIslandState currentState = FindIslandState.NotFound;
     private int FirstTurnDirection = 0;
-    private Queue<JSONObject> commandQ = new LinkedList<>();
-    public FindIsland(Map map) {
-    }
+    private final Queue<JSONObject> commandQ = new LinkedList<>();
+
 
     /**
      * Repeat "fly", "scan", and "echo" in both the left and right directions until land is found
-     *
      * @param prevAction JSONObject of the previous action
      * @param heading    Current direction the drone is facing
+     * @param droneCommand Responsible for keeping track of drone movement
+     * @param extraInfo Info corresponding to "extraInfo" in JSONObject
      * @return JSONObject of the next move
      */
     public JSONObject noLandDetected(JSONObject prevAction, Direction heading, DroneCommand droneCommand, JSONObject extraInfo) throws Exception {
@@ -30,14 +30,22 @@ public class FindIsland {
         getPrevAction(prevAction);
         logger.info("Current State: " + currentState.toString());
         if (Objects.equals(currentState,FindIslandState.NotFound)  && commandQ.isEmpty()) {
-            flyForward(heading, extraInfo, prevAction);
+            flyForward(heading);
         } else if (Objects.equals(currentState,FindIslandState.CheckEcho)) {
             checkingEcho(heading, extraInfo, prevAction);
         }
-        logger.info("Command Queue: " + commandQ.toString());
+        logger.info("Command Queue: " + commandQ);
         return getNextCommand();
     }
 
+    /**
+     * Once land is found, fly to where the corner of the island for initializing gridSearch
+     * @param prevAction JSONObject of the previous action
+     * @param heading Current direction the drone is facing
+     * @param droneCommand Responsible for keeping track of drone movement
+     * @param extraInfo Info corresponding to "extraInfo" in JSONObject
+     * @return JSONObject of the next move
+     */
     public JSONObject landDetected(JSONObject prevAction, Direction heading, DroneCommand droneCommand, JSONObject extraInfo) throws Exception {
         this.droneCommand = droneCommand;
         getPrevAction(prevAction);
@@ -47,26 +55,30 @@ public class FindIsland {
                 findEdge(heading, extraInfo, prevAction);
             }
         } else if (currentState == FindIslandState.MoveToIsland) {
-            flyToLand(heading, extraInfo, prevAction);
+            flyToLand(extraInfo);
         }
-        logger.info("Command Queue: " + commandQ.toString());
+        logger.info("Command Queue: " + commandQ);
         return getNextCommand();
     }
 
-    private void flyToLand(Direction heading, JSONObject extraInfo, JSONObject prevAction) throws Exception{
+    /**
+     * Fly to the island to initialize the search of the creeks and site
+     * @param extraInfo Info corresponding to "extraInfo" in JSONObject
+     */
+    private void flyToLand(JSONObject extraInfo) throws Exception{
 
         if (Objects.equals(prev, "echo")) {
-            if (extraInfo.getString("found").equals("GROUND")) {
-                int distance_to_shore = extraInfo.getInt("range");
-                if (distance_to_shore == 0) {
+            if ("GROUND".equals(extraInfo.getString("found"))) {
+                int distanceToShore = extraInfo.getInt("range");
+                if (distanceToShore == 0) {
                     commandQ.add(droneCommand.droneScan());
                 } else {
-                    for (int i = 0; i < distance_to_shore; i++) {
+                    for (int i = 0; i < distanceToShore; i++) {
                         commandQ.add(droneCommand.dronefly());
                     }
                     commandQ.add(droneCommand.droneScan());
                 }
-            }else{
+            } else {
                 logger.info("ISLAND NOT FOUND");
             }
         }
@@ -75,7 +87,7 @@ public class FindIsland {
 
     private void findEdge(Direction heading, JSONObject extraInfo, JSONObject prevAction) throws Exception {
 
-        if (extraInfo.getString("found").equals("GROUND")) {
+        if ("GROUND".equals(extraInfo.getString("found"))) {
             JSONObject parameters = prevAction.getJSONObject("parameters");
             Direction echoDirection = (Direction) parameters.get("direction");
             if (echoDirection == heading.turnLeft()) {
@@ -94,7 +106,7 @@ public class FindIsland {
 
     private void checkingEcho(Direction heading, JSONObject extraInfo, JSONObject prevAction) throws Exception {
         if (Objects.equals(prev, "echo")) {
-            if (extraInfo.getString("found").equals("GROUND")) {
+            if ("GROUND".equals(extraInfo.getString("found"))) {
                 JSONObject parameters = prevAction.getJSONObject("parameters");
                 Direction echoDirection = (Direction) parameters.get("direction");
                 commandQ.clear();
@@ -111,7 +123,7 @@ public class FindIsland {
                     commandQ.add(droneCommand.droneEcho(heading));
                 }
             // If we have checked all directions and there is no ground we move forward
-            } else if (extraInfo.getString("found").equals("OUT_OF_RANGE") && commandQ.isEmpty()) {
+            } else if ("OUT_OF_RANGE".equals(extraInfo.getString("found")) && commandQ.isEmpty()) {
                 commandQ.add(droneCommand.dronefly());
                 currentState = FindIslandState.NotFound;
             }
@@ -152,7 +164,7 @@ public class FindIsland {
         this.currentState = newState;
     }
 
-    private void flyForward(Direction heading, JSONObject extraInfo, JSONObject prevAction) throws Exception{
+    private void flyForward(Direction heading) {
 
         // Echo in all directions
         if (Objects.equals(prev, "fly")) {

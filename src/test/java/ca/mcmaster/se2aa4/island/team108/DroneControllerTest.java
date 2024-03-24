@@ -11,11 +11,11 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class DroneControllerTest {
     private DroneController droneController;
-    private Map map;
+    private AreaMap map;
 
     @BeforeEach
     void startPoint() {
-        map = new Map();
+        map = new AreaMap();
         droneController = new DroneController(map);
     }
     

@@ -3,16 +3,17 @@ package ca.mcmaster.se2aa4.island.team108;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class MapTest {
-    private Map map;
+    private AreaMap map;
 
     @BeforeEach
+
     void startPoint() {
-        map = new Map();
+        map = new AreaMap();
+
+
         map.position = new Position(0, 0);
     }
 

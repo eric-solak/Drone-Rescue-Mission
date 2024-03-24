@@ -14,6 +14,10 @@ public class MissionLogger implements MissionLogBook {
     private final List<String> creekLogBook = new ArrayList<>();
     private final List<String> siteLogBook = new ArrayList<>();
 
+    /**
+     * Logs all creeks and sites found during search
+     * @param action "action" tag in JSONObject, which is the previous move
+     */
     @Override
     public void input(JSONObject action) {
         logger.info("MissionLogger reached");
