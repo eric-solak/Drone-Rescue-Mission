@@ -17,9 +17,9 @@ public class DroneController {
      protected GridSearch gridSearch;
 
      public DroneController(Map map){
-          this.map = new Map();
-          this.droneCommand  = new MoveDrone(map);
+          this.droneCommand = new MoveDrone(map);
           this.position = new Position(0, 0);
+          
           this.findIsland = new FindIsland(map);
           this.gridSearch = new GridSearch();
      }
@@ -33,7 +33,8 @@ public class DroneController {
       * @param heading Current direction the drone is facing
       * @return JSONObject of the next move
       */
-     public JSONObject getNextMove(JSONObject extraInfo, JSONObject prevAction, Direction heading) {
+     public JSONObject getNextMove(JSONObject extraInfo, JSONObject prevAction, Direction heading, Map map ) {
+          this.map = map;
           JSONObject move = new JSONObject();
           droneCommand.setHeading(heading);
           position = droneCommand.getPosition();

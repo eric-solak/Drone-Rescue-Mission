@@ -9,10 +9,13 @@ import java.util.HashMap;
 public class Map {
 
     private final Logger logger = LogManager.getLogger();
-    private Position position = new Position(0, 0);
+    Position position = new Position(0, 0);
+
 
     public HashMap<String, int[]> creekMap;
     public HashMap<String, int[]> siteMap;
+
+    
 
     public Map(){
         creekMap = new HashMap<String, int[]>();
@@ -55,16 +58,16 @@ public class Map {
         return stringBuilder.toString();
     }
 
+  
+
 
     public Position updateDronePosition (Direction heading) {
         switch (heading) {
             case N:
                 position.y++;
-                
                 break;
             case E:
                 position.x++;
-                
                 break;
             case S:
                 position.y--;
@@ -91,6 +94,7 @@ public class Map {
                 default:
                     break;
                }
+               break;
            case S:
                switch (new_heading) {
                    case E:
@@ -104,6 +108,7 @@ public class Map {
                 default:
                     break;
                }
+               break;
            case W:
                switch (new_heading) {
                    case N:
@@ -117,6 +122,7 @@ public class Map {
                     default:
                         break;
                }
+               break;
            case E:
                switch (new_heading) {
                    case N:
@@ -130,6 +136,7 @@ public class Map {
                     default:
                         break;
                }
+               break;
        }
         return position;
     }

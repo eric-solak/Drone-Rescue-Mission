@@ -22,10 +22,14 @@ public class Explorer implements IExplorerRaid {
 
     Direction heading;
     Energy batteryLevel;
+    private MoveDrone droneCommand;
+    private Position position;
 
     public Explorer() {
         // Instantiate DroneController
         this.map = new Map();
+        this.droneCommand  = new MoveDrone(map);
+        this.position = new Position(0, 0);
         this.droneController = new DroneController(map);
         this.missionLogger = new MissionLogger();
         //
@@ -51,7 +55,7 @@ public class Explorer implements IExplorerRaid {
     @Override
     public String takeDecision() {
 
-        JSONObject nextAction = droneController.getNextMove(extraInfo, prevAction, heading);
+        JSONObject nextAction = droneController.getNextMove(extraInfo, prevAction, heading, map);
         prevPrevAction = prevAction;
         prevAction = nextAction;
 

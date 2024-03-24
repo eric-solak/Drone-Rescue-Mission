@@ -18,7 +18,7 @@ public class GridSearch {
     private int isNextTurnLeft = 0;
     private Position position;
     private Map map;
-    public ClosestCreek closestCreek;
+    private ClosestCreek closestCreek;
 
     /**
      * Calculates the next move during gridSearch
@@ -59,6 +59,10 @@ public class GridSearch {
 
         return commandQ.remove();
     }
+    public String printClosestCreekID(){
+        String closestCreekID = closestCreek.findClosestCreek();
+        return closestCreekID;
+    }
 
     private void getNextAction(JSONObject extraInfo, JSONObject prev, Direction heading) throws Exception {
 
@@ -89,7 +93,8 @@ public class GridSearch {
             }
             logger.info("Creek Map: {}", map.getCreekCoordinatesAsString());
             logger.info("Site Map: {}", map.getSiteCoordinatesAsString());
-            logger.info("Closest Creek ID: {}", closestCreek.findClosestCreek());
+            logger.info("The closest creek found is: {}", printClosestCreekID());
+            
 
             onScan(heading);
         } else if (Objects.equals(prevAction, "heading")) {
