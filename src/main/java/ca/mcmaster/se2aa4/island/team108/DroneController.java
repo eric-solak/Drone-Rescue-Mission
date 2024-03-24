@@ -1,9 +1,11 @@
 package ca.mcmaster.se2aa4.island.team108;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Objects;
+import java.util.Arrays;
 
 public class DroneController {
      private final Logger logger = LogManager.getLogger();
@@ -35,11 +37,11 @@ public class DroneController {
           droneCommand.setHeading(heading);
           position = droneCommand.getPosition();
           try {
-               if (currentState.equals(State.FindIsland)) {
+               if (currentState.equals(droneControllerState.FindIsland)) {
                     if (prevAction.has("action")) {
                          String prev = prevAction.getString("action");
                          if (Objects.equals(prev, "heading")) {
-                              currentState = State.MoveToIsland;
+                              currentState = droneControllerState.MoveToIsland;
                               move = droneCommand.droneEcho(heading);
                          } else {
                               move = findIsland.noLandDetected(prevAction, heading, droneCommand, extraInfo);
@@ -47,17 +49,42 @@ public class DroneController {
                     } else {
                          move.put("action", "fly");
                     }
-               } else if (currentState.equals(State.MoveToIsland)) {
+               } else if (currentState.equals(droneControllerState.MoveToIsland)) {
                     String prev = prevAction.getString("action");
                     if (Objects.equals(prev, "scan")) {
-                         currentState = State.SearchIsland;
+                         currentState = droneControllerState.SearchIsland;
                          move = droneCommand.dronefly();
                          gridSearch.getFirstTurn(findIsland.getFirstTurnDirection());
                     } else {
                          move = findIsland.landDetected(prevAction, heading, droneCommand, extraInfo);
                     }
-               } else if (currentState.equals(State.SearchIsland)) {
+               } else if (currentState.equals(droneControllerState.SearchIsland)) {
                     move = gridSearch.nextMove(extraInfo, prevAction, heading, droneCommand, position, map);
+                    logger.info("Reaching Site Check");
+                    if (prevAction.has("action")){
+                         String prev = prevAction.getString("action");
+                         if (Objects.equals(prev, "scan")) {
+                              JSONArray creekArray = extraInfo.optJSONArray("creeks");
+                              boolean containsCreek = creekArray != null && !creekArray.isEmpty();
+                              JSONArray siteArray = extraInfo.optJSONArray("sites");
+                              boolean containsSite = creekArray != null && !siteArray.isEmpty();
+                              if (containsSite) {
+                                   logger.info("Site found");
+                                   for (int i = 0; i < siteArray.length(); i++) {
+                                        String siteID = siteArray.getString(i);
+                                        logger.info("Adding site: " + siteID + " at position: " + Arrays.toString(position.getCoords()));
+                                        map.addSite(siteID, position.getCoords());
+                                   }
+                              } else if (containsCreek) {
+                                   logger.info("Creek found");
+                                   for (int i = 0; i < creekArray.length(); i++) {
+                                        String creekID = creekArray.getString(i);
+
+                                        map.addCreek(creekID, position.getCoords());
+                                   }
+                              }
+                         }
+                    }
                }
           } catch (Exception e){
                logger.error("Exception: " + e);
@@ -66,5 +93,4 @@ public class DroneController {
           logger.info("Action sent to explorer: " + move.toString());
           return move;
      }
-
 }

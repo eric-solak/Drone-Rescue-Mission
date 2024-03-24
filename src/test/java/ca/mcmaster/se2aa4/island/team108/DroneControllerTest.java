@@ -4,12 +4,14 @@ package ca.mcmaster.se2aa4.island.team108;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import org.json.JSONArray;
+import org.json.JSONObject;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class DroneControllerTest {
     private DroneController droneController;
     private AreaMap map;
+
     @BeforeEach
     void startPoint() {
         map = new AreaMap();
@@ -44,9 +46,5 @@ class DroneControllerTest {
         JSONObject move = droneController.getNextMove(extraInfo, prevAction, heading, map);
         assertEquals("stop", move.getString("action"));
     }
-
-    
-
-
 }
 
