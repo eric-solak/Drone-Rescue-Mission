@@ -6,6 +6,10 @@ import org.json.JSONObject;
 
 import java.util.Arrays;
 
+/**
+ * MoveDrone updates the drones position, direction
+ * based on the corresponding call (droneFly(), droneScan(), etc.)
+ */
 public class MoveDrone implements DroneCommand {
     private final Logger logger = LogManager.getLogger();
     private final AreaMap islandMap;
@@ -64,7 +68,6 @@ public class MoveDrone implements DroneCommand {
         currentHeading = newHeading;
         return output;
     }
-
 
     @Override
     public JSONObject droneStop() {

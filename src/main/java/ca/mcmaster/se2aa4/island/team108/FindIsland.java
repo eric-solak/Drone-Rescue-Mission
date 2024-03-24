@@ -19,9 +19,10 @@ public class FindIsland {
 
     /**
      * Repeat "fly", "scan", and "echo" in both the left and right directions until land is found
-     *
      * @param prevAction JSONObject of the previous action
      * @param heading    Current direction the drone is facing
+     * @param droneCommand Responsible for keeping track of drone movement
+     * @param extraInfo Info corresponding to "extraInfo" in JSONObject
      * @return JSONObject of the next move
      */
     public JSONObject noLandDetected(JSONObject prevAction, Direction heading, DroneCommand droneCommand, JSONObject extraInfo) throws Exception {
@@ -37,6 +38,14 @@ public class FindIsland {
         return getNextCommand();
     }
 
+    /**
+     * Once land is found, fly to where the corner of the island for initializing gridSearch
+     * @param prevAction JSONObject of the previous action
+     * @param heading Current direction the drone is facing
+     * @param droneCommand Responsible for keeping track of drone movement
+     * @param extraInfo Info corresponding to "extraInfo" in JSONObject
+     * @return JSONObject of the next move
+     */
     public JSONObject landDetected(JSONObject prevAction, Direction heading, DroneCommand droneCommand, JSONObject extraInfo) throws Exception {
         this.droneCommand = droneCommand;
         getPrevAction(prevAction);
@@ -52,6 +61,10 @@ public class FindIsland {
         return getNextCommand();
     }
 
+    /**
+     * Fly to the island to initialize the search of the creeks and site
+     * @param extraInfo Info corresponding to "extraInfo" in JSONObject
+     */
     private void flyToLand(JSONObject extraInfo) throws Exception{
 
         if (Objects.equals(prev, "echo")) {

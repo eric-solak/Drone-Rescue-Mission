@@ -15,27 +15,38 @@ public class AreaMap {
     public Map<String, int[]> creekMap;
     public Map<String, int[]> siteMap;
 
-    
 
     public AreaMap() {
         creekMap = new HashMap<>();
         siteMap = new HashMap<>();
     }
 
+    /**
+     * Add a creek with its corresponding position (coordinates)
+     * @param creekID String of the creek found
+     * @param dronePosition Coordinates of the creek position
+     */
     public void addCreek(String creekID, int[] dronePosition){
         logger.info("New creek added: " + Arrays.toString(dronePosition));
         creekMap.put(creekID, dronePosition); //i.e "creeks" : 5,5 example of what would be storied in hashmap
 
     }
 
+    /**
+     * Add a site with its corresponding position (coordinates)
+     * @param siteID String of the site found
+     * @param dronePosition Coordinates of the site position
+     */
     public void addSite(String siteID, int[] dronePosition){
         logger.info("site added");
         siteMap.put(siteID, dronePosition);
     }
-    
 
-    
-    //below 2 function help to visualize hashmap. currently has bugs
+
+    /**
+     * Returns the coordinates of the creek
+     * @return Creek Coordinates (String)
+     */
     public String getCreekCoordinatesAsString() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("CreekCoordinates:\n");
@@ -47,6 +58,10 @@ public class AreaMap {
         return stringBuilder.toString();
     }
 
+    /**
+     * Returns the coordinates of the site
+     * @return Site Coordinates (String)
+     */
     public String getSiteCoordinatesAsString() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("SiteCoordinates:\n");
@@ -58,9 +73,11 @@ public class AreaMap {
         return stringBuilder.toString();
     }
 
-  
-
-
+    /**
+     * Updates the drones internal coordinate position when flying
+     * @param heading The direction the drone is facing
+     * @return New position
+     */
     public Position updateDronePosition (Direction heading) {
         switch (heading) {
             case N:
@@ -81,6 +98,12 @@ public class AreaMap {
         return position;
     }
 
+    /**
+     * Updates the drones internal coordinate position when turning
+     * @param currentHeading Direction before turning
+     * @param newHeading Direction after turning
+     * @return New position
+     */
     public Position updateDronePositionForTurning (Direction currentHeading, Direction newHeading) {
        switch (currentHeading) {
            case N:

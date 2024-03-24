@@ -25,11 +25,11 @@ public class GridSearch {
      * @param extraInfo JSONObject that contains the results of the previous action.
      * @param prev JSONObject of the previous action
      * @param heading Current direction the drone is facing
+     * @param droneCommand Responsible for keeping track of drone movement
+     * @param position Current coordinates of the drone
+     * @param map Map of all discovered land
      * @return JSONObject of the next move
      */
-    // TODO: Implement Map. Map (or a class that uses Map) can tell GridSearch
-    //  // which tiles have been searched, so GridSearch will know when it has to turnRight or turnLeft
-
     public JSONObject nextMove(JSONObject extraInfo, JSONObject prev, Direction heading, DroneCommand droneCommand, Position position, AreaMap map) {
         this.droneCommand = droneCommand;
         this.map = map;
@@ -53,10 +53,17 @@ public class GridSearch {
 
         return commandQ.remove();
     }
+
     public String printClosestCreekID(){
         return closestCreek.findClosestCreek();
     }
 
+    /**
+     * Repeat "fly" and "scan" until an edge is found, then turn
+     * @param extraInfo JSONObject that contains the results of the previous action.
+     * @param prev JSONObject of the previous action
+     * @param heading Current direction the drone is facing
+     */
     private void getNextAction(JSONObject extraInfo, JSONObject prev, Direction heading) throws Exception {
 
         String prevAction = prev.getString("action");
@@ -96,6 +103,7 @@ public class GridSearch {
             onEcho(extraInfo, heading);
         }
     }
+
     private void onFly() throws Exception {
         commandQ.add(droneCommand.droneScan());
     }
@@ -114,6 +122,7 @@ public class GridSearch {
         completeUTurn = true;
 
     }
+
     private void rightUTurn(Direction heading) throws Exception {
 
         commandQ.add(droneCommand.droneTurn(heading.turnLeft()));
@@ -124,6 +133,7 @@ public class GridSearch {
         completeUTurn = true;
 
     }
+
     private void onScan(Direction heading) throws Exception{
         if (containsWater){
             commandQ.add(droneCommand.droneEcho(heading));
@@ -135,6 +145,12 @@ public class GridSearch {
     public void getFirstTurn(Integer value){
         isNextTurnLeft += value;
     }
+
+    /**
+     * Checks if drone has reached the end of the island (end of search)
+     * @param extraInfo JSONObject that contains the results of the previous action
+     * @param heading Direction the drone is currently facing
+     */
     private void onEcho(JSONObject extraInfo, Direction heading) throws Exception{
         // If we echo forward after a uTurn and there is no land ahead we have finished scanning the island
         if (completeUTurn && "OUT_OF_RANGE".equals(extraInfo.getString("found"))){
