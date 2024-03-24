@@ -9,16 +9,23 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 
-public class DroneControllerTest {
+class DroneControllerTest {
     private DroneController droneController;
     private AreaMap map;
+    private DroneCommand droneCommand; // This needs to be instantiated
+    private FindIsland findIsland; // This needs to be instantiated
+    private GridSearch gridSearch;
+    private ClosestCreek closestCreek; // This needs to be instantiated
 
     @BeforeEach
     void startPoint() {
         map = new AreaMap();
-        droneController = new DroneController(map);
+        findIsland = new FindIsland();
+        closestCreek = new ClosestCreek(map.siteMap, map.creekMap);
+        droneCommand = new MoveDrone(map);
+        gridSearch = new GridSearch(droneCommand, map, closestCreek);
+        droneController = new DroneController(map, droneCommand, findIsland, gridSearch);
     }
-    
     //boundary test case
     @Test
     void getNextMoveWithNoPrevAction() {
@@ -53,3 +60,4 @@ public class DroneControllerTest {
 
 
 }
+

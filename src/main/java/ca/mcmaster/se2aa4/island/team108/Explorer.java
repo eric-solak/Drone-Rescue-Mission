@@ -23,7 +23,11 @@ public class Explorer implements IExplorerRaid {
     public Explorer() {
         // Instantiate DroneController
         this.map = new AreaMap();
-        this.droneController = new DroneController(map);
+        DroneCommand droneCommand = new MoveDrone(map);
+        FindIsland findIsland = new FindIsland();
+        ClosestCreek closestCreek = new ClosestCreek(map.siteMap, map.creekMap);
+        GridSearch gridSearch = new GridSearch(droneCommand, map, closestCreek);
+        this.droneController = new DroneController(map, droneCommand, findIsland, gridSearch);
         this.missionLogger = new MissionLogger();
         //
 

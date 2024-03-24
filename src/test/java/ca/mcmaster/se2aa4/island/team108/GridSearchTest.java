@@ -17,11 +17,14 @@ class GridSearchTest {
 
     @BeforeEach
     public void initialize() {
-        gridSearch = new GridSearch();
-        direction = Direction.E;
-        droneCommand = new MoveDrone(new AreaMap());
-        position = new Position(0,0);
         map = new AreaMap();
+        droneCommand = new MoveDrone(map);
+        ClosestCreek closestCreek = new ClosestCreek(map.siteMap, map.creekMap);
+        gridSearch = new GridSearch(droneCommand, map,closestCreek);
+        direction = Direction.E;
+        position = new Position(0, 0);
+        extraInfo = new JSONObject();
+
     }
 
     @Test
@@ -302,3 +305,4 @@ class GridSearchTest {
 
 
 }
+

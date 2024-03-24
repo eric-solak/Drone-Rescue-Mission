@@ -9,17 +9,16 @@ public class DroneController {
      private final Logger logger = LogManager.getLogger();
      private enum State {FindIsland, MoveToIsland, SearchIsland}
      private State currentState = State.FindIsland;
-     protected Position position;
+     private Position position;
      private final DroneCommand droneCommand;
      private final FindIsland findIsland;
-     protected GridSearch gridSearch;
+     private final GridSearch gridSearch;
 
-     public DroneController(AreaMap map){
-          this.droneCommand = new MoveDrone(map);
+     public DroneController(AreaMap map, DroneCommand droneCommand, FindIsland findIsland, GridSearch gridSearch) {
+          this.droneCommand = droneCommand;
           this.position = new Position(0, 0);
-          
-          this.findIsland = new FindIsland();
-          this.gridSearch = new GridSearch();
+          this.findIsland = findIsland;
+          this.gridSearch = gridSearch;
      }
 
      /**
