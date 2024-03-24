@@ -1,5 +1,4 @@
 package ca.mcmaster.se2aa4.island.team108;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,17 +9,16 @@ public class DroneController {
      private final Logger logger = LogManager.getLogger();
      private enum State {FindIsland, MoveToIsland, SearchIsland}
      private State currentState = State.FindIsland;
-     protected Map map;
      protected Position position;
-     private DroneCommand droneCommand;
-     private FindIsland findIsland;
+     private final DroneCommand droneCommand;
+     private final FindIsland findIsland;
      protected GridSearch gridSearch;
 
-     public DroneController(Map map){
+     public DroneController(AreaMap map){
           this.droneCommand = new MoveDrone(map);
           this.position = new Position(0, 0);
           
-          this.findIsland = new FindIsland(map);
+          this.findIsland = new FindIsland();
           this.gridSearch = new GridSearch();
      }
 
@@ -33,8 +31,7 @@ public class DroneController {
       * @param heading Current direction the drone is facing
       * @return JSONObject of the next move
       */
-     public JSONObject getNextMove(JSONObject extraInfo, JSONObject prevAction, Direction heading, Map map ) {
-          this.map = map;
+     public JSONObject getNextMove(JSONObject extraInfo, JSONObject prevAction, Direction heading, AreaMap map ) {
           JSONObject move = new JSONObject();
           droneCommand.setHeading(heading);
           position = droneCommand.getPosition();

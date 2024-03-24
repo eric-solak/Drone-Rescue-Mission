@@ -5,7 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+
 
 public class FindIslandTest {
     private FindIsland findIsland;
@@ -13,11 +13,13 @@ public class FindIslandTest {
     private Direction direction;
     private JSONObject extraInfo;
 
+
+
     @BeforeEach
     public void initialize() {
-        findIsland = new FindIsland(new Map());
+        findIsland = new FindIsland();
         direction = Direction.E;
-        droneCommand = new MoveDrone(new Map());
+        droneCommand = new MoveDrone(new AreaMap());
     }
 
     @Test

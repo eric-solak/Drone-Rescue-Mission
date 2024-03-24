@@ -1,28 +1,27 @@
 package ca.mcmaster.se2aa4.island.team108;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class GridSearchTest {
     private GridSearch gridSearch;
     private Position position;
     private DroneCommand droneCommand;
     private Direction direction;
-    private Map map;
+    private AreaMap map;
     private JSONObject extraInfo;
 
     @BeforeEach
     public void initialize() {
         gridSearch = new GridSearch();
         direction = Direction.E;
-        droneCommand = new MoveDrone(new Map());
+        droneCommand = new MoveDrone(new AreaMap());
         position = new Position(0,0);
-        map = new Map();
+        map = new AreaMap();
     }
 
     @Test
@@ -238,7 +237,7 @@ class GridSearchTest {
     }
 
     @Test
-    void afterScanningACreek(){
+    void afterScanningACreek() {
         var prevAction = new JSONObject();
         prevAction.put("action", "scan");
         var extras = new JSONObject();

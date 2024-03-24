@@ -6,20 +6,24 @@ import org.json.JSONObject;
 
 import java.util.Arrays;
 
+/**
+ * MoveDrone updates the drones position, direction
+ * based on the corresponding call (droneFly(), droneScan(), etc.)
+ */
 public class MoveDrone implements DroneCommand {
     private final Logger logger = LogManager.getLogger();
-    protected Map islandMap;
-    private Direction current_heading;
+    private final AreaMap islandMap;
+    private Direction currentHeading;
     protected Position position;
 
     
-    public MoveDrone(Map map) {
+    public MoveDrone(AreaMap map) {
         this.islandMap = map;
     }
     
     @Override
     public void setHeading(Direction heading) {
-        this.current_heading = heading;
+        this.currentHeading = heading;
     }
 
     @Override
@@ -30,15 +34,15 @@ public class MoveDrone implements DroneCommand {
     @Override
     public JSONObject dronefly() {
         JSONObject output = new JSONObject();
-        islandMap.updateDronePosition(current_heading);
-        position = islandMap.updateDronePosition(current_heading);
+        islandMap.updateDronePosition(currentHeading);
+        position = islandMap.updateDronePosition(currentHeading);
         logger.info("Updated position: " + Arrays.toString(position.getCoords()));
         return output.put("action", "fly");
 
     }
 
     @Override
-    public JSONObject droneScan() throws Exception {
+    public JSONObject droneScan() {
         JSONObject output = new JSONObject();
         return output.put("action", "scan");
     }
@@ -54,18 +58,16 @@ public class MoveDrone implements DroneCommand {
     }
 
     @Override
-    public JSONObject droneTurn(Direction new_heading) throws IllegalStateException {
+    public JSONObject droneTurn(Direction newHeading) throws IllegalStateException {
         JSONObject output = new JSONObject();
         output.put("action", "heading");
         JSONObject parameters = new JSONObject();
-        parameters.put("direction", new_heading);
+        parameters.put("direction", newHeading);
         output.put("parameters", parameters);
-        position = islandMap.updateDronePositionForTurning(current_heading, new_heading);
-        current_heading = new_heading; 
-        //logger.info("Updated position: " + Arrays.toString(position.getCoords()));
+        position = islandMap.updateDronePositionForTurning(currentHeading, newHeading);
+        currentHeading = newHeading;
         return output;
     }
-
 
     @Override
     public JSONObject droneStop() {

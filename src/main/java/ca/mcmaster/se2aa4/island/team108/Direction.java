@@ -1,6 +1,9 @@
 package ca.mcmaster.se2aa4.island.team108;
 
-// Direction Enum
+/**
+ * Enum of the direction the drone is currently facing
+ * turnRight() and turnLeft() return the new direction after turning
+ */
 public enum Direction {
     N, S, E, W;
 
