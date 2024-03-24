@@ -9,19 +9,18 @@ import java.util.Arrays;
 
 public class DroneController {
      private final Logger logger = LogManager.getLogger();
-     public enum droneControllerState {FindIsland, MoveToIsland, SearchIsland}
-     private droneControllerState currentState = droneControllerState.FindIsland;
-     protected Position position;
-     private final DroneCommand droneCommand;
-     private final FindIsland findIsland;
-     protected GridSearch gridSearch;
+     private enum State {FindIsland, MoveToIsland, SearchIsland}
+     private State currentState = State.FindIsland;
+     private Position position;
+     private DroneCommand droneCommand;
+     private FindIsland findIsland;
+     private GridSearch gridSearch;
 
-     public DroneController(AreaMap map){
+     public DroneController(AreaMap map) {
           this.droneCommand = new MoveDrone(map);
-          this.position = new Position(0, 0);
-          
           this.findIsland = new FindIsland();
-          this.gridSearch = new GridSearch();
+          this.gridSearch = new GridSearch(this.droneCommand, map, new ClosestCreek(map.siteMap, map.creekMap));
+          this.position = new Position(0, 0);
      }
 
      /**

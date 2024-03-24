@@ -7,21 +7,16 @@ import org.junit.jupiter.api.Test;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
-
-public class DroneControllerTest {
+class DroneControllerTest {
     private DroneController droneController;
     private AreaMap map;
-
-
 
     @BeforeEach
     void startPoint() {
         map = new AreaMap();
         droneController = new DroneController(map);
     }
-    
     //boundary test case
     @Test
     void getNextMoveWithNoPrevAction() {
@@ -52,3 +47,4 @@ public class DroneControllerTest {
         assertEquals("stop", move.getString("action"));
     }
 }
+

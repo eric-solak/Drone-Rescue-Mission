@@ -15,8 +15,6 @@ public class Explorer implements IExplorerRaid {
     private final DroneController droneController;
     private final MissionLogger missionLogger;
     private final AreaMap map;
-
-
     Direction heading;
     Energy batteryLevel;
 

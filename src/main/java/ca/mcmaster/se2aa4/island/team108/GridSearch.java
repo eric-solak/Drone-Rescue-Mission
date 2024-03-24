@@ -12,13 +12,19 @@ import java.util.Objects;
 public class GridSearch {
     private final Logger logger = LogManager.getLogger();
     private final Queue<JSONObject> commandQ = new LinkedList<>();
-    private DroneCommand droneCommand;
+    private final DroneCommand droneCommand;
     private boolean containsWater;
     private boolean completeUTurn;
     private int isNextTurnLeft = 0;
     private Position position;
     private AreaMap map;
-    private ClosestCreek closestCreek;
+    private final ClosestCreek closestCreek;
+
+    public GridSearch(DroneCommand droneCommand, AreaMap map, ClosestCreek closestCreek) {
+        this.droneCommand = droneCommand;
+        this.map = map;
+        this.closestCreek = closestCreek;
+    }
 
     /**
      * Calculates the next move during gridSearch
@@ -31,10 +37,10 @@ public class GridSearch {
      * @return JSONObject of the next move
      */
     public JSONObject nextMove(JSONObject extraInfo, JSONObject prev, Direction heading, DroneCommand droneCommand, Position position, AreaMap map) {
-        this.droneCommand = droneCommand;
+        //this.droneCommand = droneCommand;
         this.map = map;
         this.position = position;
-        this.closestCreek = new ClosestCreek(map.siteMap, map.creekMap);
+        //this.closestCreek = new ClosestCreek(map.siteMap, map.creekMap);
 
         // Dequeues and returns the next action from the queue
         logger.info("Current command Queue: " + commandQ);
