@@ -15,19 +15,13 @@ public class Explorer implements IExplorerRaid {
     private final DroneController droneController;
     private final MissionLogger missionLogger;
     private final AreaMap map;
-
-
     Direction heading;
     Energy batteryLevel;
 
     public Explorer() {
         // Instantiate DroneController
         this.map = new AreaMap();
-        DroneCommand droneCommand = new MoveDrone(map);
-        FindIsland findIsland = new FindIsland();
-        ClosestCreek closestCreek = new ClosestCreek(map.siteMap, map.creekMap);
-        GridSearch gridSearch = new GridSearch(droneCommand, map, closestCreek);
-        this.droneController = new DroneController(map, droneCommand, findIsland, gridSearch);
+        this.droneController = new DroneController(map);
         this.missionLogger = new MissionLogger();
         //
 

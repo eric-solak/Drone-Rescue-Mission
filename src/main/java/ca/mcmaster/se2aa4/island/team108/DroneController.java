@@ -10,15 +10,15 @@ public class DroneController {
      private enum State {FindIsland, MoveToIsland, SearchIsland}
      private State currentState = State.FindIsland;
      private Position position;
-     private final DroneCommand droneCommand;
-     private final FindIsland findIsland;
-     private final GridSearch gridSearch;
+     private DroneCommand droneCommand;
+     private FindIsland findIsland;
+     private GridSearch gridSearch;
 
-     public DroneController(AreaMap map, DroneCommand droneCommand, FindIsland findIsland, GridSearch gridSearch) {
-          this.droneCommand = droneCommand;
+     public DroneController(AreaMap map) {
+          this.droneCommand = new MoveDrone(map);
+          this.findIsland = new FindIsland();
+          this.gridSearch = new GridSearch(this.droneCommand, map, new ClosestCreek(map.siteMap, map.creekMap));
           this.position = new Position(0, 0);
-          this.findIsland = findIsland;
-          this.gridSearch = gridSearch;
      }
 
      /**
