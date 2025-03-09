@@ -1,10 +1,9 @@
 # Drone Rescue Mission
 
 - Authors:
+  - [Eric, Solak](solake@mcmaster.ca)
   - [Vedant, Patel](patev70@mcmaster.ca)
   - [Tyler, Yue](yuet5@mcmaster.ca)
-  - [Eric, Solak](solake@mcmaster.ca)
-
 
 ## Product Description
 This project aims to support the rescuing of individuals by (1) locating people in unknown terrain and (2) finding a safe place where a rescue team can be sent close to the people to rescue.
@@ -16,7 +15,7 @@ This product is an _exploration command center_ for the [Island](https://ace-des
 - The `ca.mcmaster.se2aa4.island.team108.Explorer` class implements the command center, used to compete with the others. (XXX being the team identifier)
 - The `Runner` class allows one to run the command center on a specific map.
 
-This project was built using **Java**, **Maven**, and tested with **JUnit**.
+This project was made using **Java**, **Maven**, and tested with **JUnit**.
   
 ## How to compile, run and deploy
 
